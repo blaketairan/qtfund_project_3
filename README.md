@@ -16,13 +16,40 @@
 
 ## 快速开始
 
-### 1. 安装依赖
+### 1. 一键设置环境（推荐）
+
+使用自动化脚本设置虚拟环境和依赖：
 
 ```bash
+./bin/setup.sh
+```
+
+该脚本会自动：
+- ✅ 检查Python版本
+- ✅ 创建虚拟环境 `.venv`
+- ✅ 激活虚拟环境
+- ✅ 升级pip到最新版本
+- ✅ 安装所有依赖包
+- ✅ 创建必要的目录
+
+### 2. 手动安装（可选）
+
+如果您希望手动设置：
+
+```bash
+# 创建虚拟环境
+python3 -m venv .venv
+
+# 激活虚拟环境
+source .venv/bin/activate  # Linux/macOS
+# 或
+.venv\Scripts\activate     # Windows
+
+# 安装依赖
 pip install -r requirements.txt
 ```
 
-### 2. 配置环境变量
+### 3. 配置环境变量
 
 复制配置模板并修改：
 
@@ -49,9 +76,24 @@ DB_PASSWORD=your_password
 python -c "import secrets; print(secrets.token_hex(32))"
 ```
 
-### 3. 启动服务
+### 4. 启动服务
 
+**使用启动脚本（推荐）：**
 ```bash
+./bin/start.sh
+```
+
+启动脚本会自动：
+- 检测并激活虚拟环境（如果存在 `.venv`）
+- 检查端口占用情况
+- 检查依赖是否安装
+- 后台启动服务并记录PID
+
+**手动启动：**
+```bash
+# 激活虚拟环境（如果使用虚拟环境）
+source .venv/bin/activate
+
 # 前台启动
 python start_flask_app.py
 
@@ -138,12 +180,52 @@ qtfund_project_3/
 
 两个服务共享同一个TimescaleDB数据库，但职责明确分离。
 
+## 常用命令
+
+```bash
+# 一键设置环境
+./bin/setup.sh
+
+# 启动服务
+./bin/start.sh
+
+# 查看服务状态
+./bin/health.sh
+
+# 停止服务
+./bin/stop.sh
+
+# 查看日志
+tail -f logs/query_service.log
+tail -f logs/flask_server.log
+```
+
+## 虚拟环境管理
+
+本项目推荐使用Python虚拟环境来隔离依赖：
+
+```bash
+# 激活虚拟环境
+source .venv/bin/activate
+
+# 退出虚拟环境
+deactivate
+
+# 在虚拟环境中安装新包
+pip install package_name
+pip freeze > requirements.txt  # 更新依赖列表
+```
+
+**注意：** `.venv` 目录已在 `.gitignore` 中配置，不会被提交到仓库。
+
 ## 注意事项
 
-1. 本服务仅提供查询功能，不包含数据同步
-2. 数据同步请使用端口7777的同步服务
-3. 确保数据库连接正确配置
-4. 建议配合同步服务一起使用
+1. **推荐使用虚拟环境**：运行 `./bin/setup.sh` 自动创建
+2. 本服务仅提供查询功能，不包含数据同步
+3. 数据同步请使用端口7777的同步服务
+4. 确保数据库连接正确配置
+5. 生产环境必须修改 `.env` 中的 `SECRET_KEY`
+6. 建议配合同步服务一起使用
 
 ## 许可证
 
