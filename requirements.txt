@@ -1,0 +1,16 @@
+# TimescaleDB 和 PostgreSQL 驱动
+psycopg2-binary==2.9.7
+sqlalchemy==2.0.23
+
+# 配置文件处理
+python-dotenv==1.0.0
+pydantic==2.5.0
+pydantic-settings==2.1.0
+
+# Web框架
+flask==3.0.0
+flask-cors==4.0.0
+
+# 日志和工具
+loguru==0.7.2
+
