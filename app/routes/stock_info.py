@@ -24,6 +24,17 @@ def query_from_local():
         is_active = request.args.get('is_active', 'true').lower() == 'true'
         limit = request.args.get('limit', 100, type=int)
         
+        # 限制最大查询数量
+        if limit > 10000:
+            return create_error_response(
+                400,
+                "参数错误",
+                "limit参数不能超过10000"
+            )
+        
+        if limit <= 0:
+            return create_error_response(400, "参数错误", "limit必须大于0")
+        
         from app.services.stock_info_service import StockInfoService
         service = StockInfoService()
         

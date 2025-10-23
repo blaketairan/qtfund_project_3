@@ -133,6 +133,20 @@ def list_stocks():
         limit = request.args.get('limit', 100, type=int)
         offset = request.args.get('offset', 0, type=int)
         
+        # 限制最大查询数量，防止性能问题
+        if limit > 10000:
+            return create_error_response(
+                400,
+                "参数错误",
+                "limit参数不能超过10000，建议使用分页查询"
+            )
+        
+        if limit <= 0:
+            return create_error_response(400, "参数错误", "limit必须大于0")
+        
+        if offset < 0:
+            return create_error_response(400, "参数错误", "offset不能为负数")
+        
         from app.services.stock_data_service import StockDataService
         service = StockDataService()
         

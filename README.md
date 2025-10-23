@@ -135,15 +135,37 @@ POST /api/stock-price/query
 # 获取股票基础信息
 GET /api/stock-price/info/SH.600519
 
-# 列出所有股票
-GET /api/stock-price/list?market_code=SH&limit=100
+# 列出所有股票（默认返回100条）
+GET /api/stock-price/list?market_code=SH&limit=100&offset=0
+
+# 参数说明：
+# - market_code: 市场代码（SH/SZ/BJ，可选）
+# - is_active: 是否活跃（Y/N，默认Y）
+# - limit: 返回数量限制（默认100，最大10000）
+# - offset: 偏移量，用于分页（默认0）
+
+# 获取更多数据示例：
+GET /api/stock-price/list?limit=500                    # 获取500条
+GET /api/stock-price/list?limit=100&offset=100         # 分页：第2页
+GET /api/stock-price/list?market_code=SH&limit=1000    # 上海市场1000条
 ```
 
 ### 股票信息查询
 
 ```bash
-# 从本地JSON查询
+# 从本地JSON查询（默认返回100条）
 GET /api/stock-info/local?exchange_code=XSHG&limit=100
+
+# 参数说明：
+# - exchange_code: 交易所代码（XSHG/XSHE/BJSE，可选）
+# - keyword: 搜索关键词（股票名称或代码，可选）
+# - is_active: 是否只返回活跃股票（true/false，默认true）
+# - limit: 返回数量限制（默认100）
+
+# 查询示例：
+GET /api/stock-info/local?limit=500                        # 获取500条
+GET /api/stock-info/local?exchange_code=XSHG&limit=1000   # 上交所1000条
+GET /api/stock-info/local?keyword=茅台                      # 搜索"茅台"
 
 # 获取统计信息
 GET /api/stock-info/statistics
