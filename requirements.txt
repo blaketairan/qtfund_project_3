@@ -1,16 +1,17 @@
 # TimescaleDB 和 PostgreSQL 驱动
-psycopg2-binary==2.9.7
-sqlalchemy==2.0.23
+# 使用>=版本范围以提高兼容性，支持Rocky Linux 9等系统
+psycopg2-binary>=2.9.0,<3.0.0
+sqlalchemy>=2.0.0,<2.1.0
 
 # 配置文件处理
-python-dotenv==1.0.0
-pydantic==2.5.0
-pydantic-settings==2.1.0
+python-dotenv>=1.0.0,<2.0.0
+pydantic>=2.0.0,<3.0.0
+pydantic-settings>=2.0.0,<3.0.0
 
 # Web框架
-flask==3.0.0
-flask-cors==4.0.0
+flask>=3.0.0,<4.0.0
+flask-cors>=4.0.0,<5.0.0
 
 # 日志和工具
-loguru==0.7.2
+loguru>=0.7.0,<1.0.0
 

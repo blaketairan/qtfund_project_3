@@ -16,6 +16,8 @@
 
 ## 快速开始
 
+> **💡 提示：** 如果遇到安装问题（特别是Rocky Linux 9用户），请参考 **[安装指南 (INSTALL.md)](INSTALL.md)**
+
 ### 1. 一键设置环境（推荐）
 
 使用自动化脚本设置虚拟环境和依赖：
@@ -31,6 +33,11 @@
 - ✅ 升级pip到最新版本
 - ✅ 安装所有依赖包
 - ✅ 创建必要的目录
+
+**Rocky Linux 9 / CentOS 用户：** 如果安装失败，请使用国内镜像源：
+```bash
+pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
+```
 
 ### 2. 手动安装（可选）
 

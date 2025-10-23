@@ -67,7 +67,38 @@ echo ""
 echo -e "${BLUE}[5/5] 安装项目依赖...${NC}"
 if [ -f "requirements.txt" ]; then
     echo "   正在安装依赖包..."
-    pip install -r requirements.txt -q
+    
+    # 检测是否为Rocky Linux/CentOS/RHEL等系统
+    if [ -f "/etc/rocky-release" ] || [ -f "/etc/redhat-release" ]; then
+        echo -e "${YELLOW}   检测到Rocky Linux/RHEL系统${NC}"
+        echo "   提示: 如果安装失败，请尝试以下操作："
+        echo "   1. 升级pip: pip install --upgrade pip"
+        echo "   2. 使用国内镜像源加速"
+        echo ""
+    fi
+    
+    # 尝试安装，如果失败提供详细错误信息
+    if ! pip install -r requirements.txt -q; then
+        echo ""
+        echo -e "${RED}   ❌ 依赖安装失败${NC}"
+        echo ""
+        echo -e "${YELLOW}可能的解决方案：${NC}"
+        echo ""
+        echo "1. 使用国内镜像源（推荐用于中国大陆）:"
+        echo -e "   ${BLUE}pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple${NC}"
+        echo ""
+        echo "2. 或使用阿里云镜像源:"
+        echo -e "   ${BLUE}pip install -r requirements.txt -i https://mirrors.aliyun.com/pypi/simple/${NC}"
+        echo ""
+        echo "3. 升级pip到最新版本:"
+        echo -e "   ${BLUE}pip install --upgrade pip${NC}"
+        echo ""
+        echo "4. 手动安装失败的包（替换版本号）:"
+        echo -e "   ${BLUE}pip install sqlalchemy --upgrade${NC}"
+        echo ""
+        exit 1
+    fi
+    
     echo -e "${GREEN}   ✅ 依赖安装完成${NC}"
 else
     echo -e "${RED}   ❌ 未找到requirements.txt文件${NC}"
