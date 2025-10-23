@@ -112,6 +112,10 @@ nohup python start_flask_app.py > logs/flask.log 2>&1 &
 
 ## API接口
 
+> **📖 完整API文档**: 请查看 **[API.md](API.md)** 获取详细的接口说明、参数描述、返回格式和使用示例。
+
+### 快速参考
+
 ### 健康检查
 
 ```bash
