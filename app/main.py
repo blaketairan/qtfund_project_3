@@ -54,10 +54,12 @@ def register_blueprints(app):
     from app.routes.stock_price import stock_price_bp
     from app.routes.stock_info import stock_info_bp
     from app.routes.health import health_bp
+    from app.routes.custom_calculation import custom_calculation_bp
     
     app.register_blueprint(health_bp, url_prefix='/api')
     app.register_blueprint(stock_price_bp, url_prefix='/api/stock-price')
     app.register_blueprint(stock_info_bp, url_prefix='/api/stock-info')
+    app.register_blueprint(custom_calculation_bp, url_prefix='/api/custom-calculations')
 
 
 def register_error_handlers(app):

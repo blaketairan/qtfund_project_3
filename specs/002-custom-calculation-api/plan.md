@@ -5,19 +5,19 @@
 
 ## Summary
 
-Implement secure Python script execution endpoint for custom stock calculations with full CRUD script management. Users write Python scripts, save them for reuse, and backend executes them in sandboxed environment (restrictedpython) returning calculated results. Supports batch processing for 200+ stocks. Includes script management (create, read, update, delete saved scripts). Prevents unauthorized operations (file access, imports, system calls). Robust error handling with structured responses.
+Implement secure Python script execution endpoint for custom stock calculations. Users write Python scripts, backend executes them in sandboxed environment (restrictedpython) and returns calculated results. Supports batch processing for 200+ stocks. Prevents unauthorized operations (file access, imports, system calls). Robust error handling with structured responses.
 
 ## Technical Context
 
 **Language/Version**: Python 3.9+, Flask 3.0+
 **Primary Dependencies**: restrictedpython, Flask, existing TimescaleDB connection
-**Storage**: Scripts stored in SQLite or PostgreSQL table (id, name, description, code, created_at, updated_at, user_id optional)
+**Storage**: No additional storage (uses existing stock data, results returned directly)
 **Testing**: pytest with script execution tests, security validation tests
 **Target Platform**: Linux/macOS backend (Flask service port 8000)
 **Project Type**: Backend API extension (single Flask app)
 **Performance Goals**: <10s execution per request, 200+ concurrent requests handled
 **Constraints**: Must use restrictedpython (no eval/exec), must not allow file access, must block imports
-**Scale/Scope**: 6 new endpoints (1 execute + 5 CRUD), 1 database table, 1 service module, 15 test cases
+**Scale/Scope**: 1 new endpoint, 1 service module, 10 test cases
 
 ## Constitution Check
 
@@ -50,19 +50,12 @@ specs/002-custom-calculation-api/
 ```text
 app/
 ├── routes/
-│   └── custom_calculation.py        # NEW endpoints (execute + CRUD)
-├── services/
-│   └── sandbox_executor.py          # NEW sandbox service
-└── models/
-    └── custom_script.py             # NEW SavedScript model
-
-database/
-└── migrations/
-    └── create_custom_scripts_table.sql  # NEW schema
+│   └── custom_calculation.py        # NEW endpoint
+└── services/
+    └── sandbox_executor.py          # NEW sandbox service
 
 tests/                                  # NEW directory
-├── test_custom_calculation.py       # NEW API tests (execute)
-├── test_script_management.py        # NEW CRUD tests
+├── test_custom_calculation.py       # NEW API tests
 └── test_sandbox_security.py         # NEW security tests
 ```
 
@@ -72,14 +65,12 @@ tests/                                  # NEW directory
 
 ### Phase 1: Database Schema for Script Storage
 - Create `custom_scripts` table with:
-  - id (primary key, auto-increment)
-  - name (unique identifier)
+  - id (primary key)
+  - name (string, required)
   - description (optional text)
   - code (Python script text)
-  - created_at (timestamp)
-  - updated_at (timestamp)
-  - user_id (optional, for future multi-user support)
-- Create migration file in `database/migrations/`
+  - created_at, updated_at (timestamps)
+- Use existing PostgreSQL/TimescaleDB connection
 
 ### Phase 2: Sandbox Executor
 - Install restrictedpython: `pip install RestrictedPython`
@@ -94,7 +85,7 @@ tests/                                  # NEW directory
 - Create `CustomScript` model in `app/models/custom_script.py`
 - Implement CRUD operations (save, retrieve, update, delete)
 - Add validation for script code syntax
-- Add unique name constraint
+- Handle script uniqueness (by name)
 
 ### Phase 4: Script Management Endpoints (CRUD)
 - POST /api/custom-calculations/scripts - Create new script
@@ -104,19 +95,17 @@ tests/                                  # NEW directory
 - DELETE /api/custom-calculations/scripts/{id} - Delete script
 
 ### Phase 5: Execute Endpoint with Script Management
-- Modify `POST /api/custom-calculations/execute` to accept:
-  - Either `script` (inline code) OR `script_id` (reference to saved script)
+- Update `POST /api/custom-calculations/execute`
+  - Accept either `script` (inline code) OR `script_id` (reference to saved script)
 - If script_id provided: Load script from database
-- Execute same as before
+- Fetch stock data for symbols from database
+- Pass stock row dict to sandbox executor
+- Return JSON results or errors
 
-### Phase 6: Error Handling
+### Phase 6: Error Handling & Security Validation
 - Syntax errors: Return line number and message
 - Runtime errors: Return exception type and message
 - Timeout: Return timeout error
-- Invalid symbols: Return null/error per symbol
-- Type validation: Ensure results are numbers
-
-### Phase 7: Security Validation
 - Test restricted imports (os, sys, importlib, etc.)
 - Test file operations (open, read, write)
 - Test network operations

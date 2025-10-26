@@ -23,9 +23,9 @@
 
 **Purpose**: Project initialization and basic structure
 
-- [ ] T001 Install RestrictedPython dependency in requirements.txt
-- [ ] T002 Create tests directory at repository root
-- [ ] T003 [P] Setup pytest configuration for tests
+- [X] T001 Install RestrictedPython dependency in requirements.txt
+- [X] T002 Create tests directory at repository root
+- [X] T003 [P] Setup pytest configuration for tests
 
 ---
 
@@ -35,13 +35,13 @@
 
 **⚠️ CRITICAL**: No user story work can begin until this phase is complete
 
-- [ ] T004 Create SandboxExecutor service class structure in app/services/sandbox_executor.py
-- [ ] T005 Install RestrictedPython package and configure safe globals in app/services/sandbox_executor.py
-- [ ] T006 Implement script compilation with RestrictedPython in app/services/sandbox_executor.py
-- [ ] T007 Implement execution timeout handling (10s max) in app/services/sandbox_executor.py
-- [ ] T008 Implement exception catching and formatting in app/services/sandbox_executor.py
-- [ ] T009 Configure safe built-ins (dict, list, str, int, float, math) in app/services/sandbox_executor.py
-- [ ] T010 Block dangerous operations (file access, imports, system calls) in app/services/sandbox_executor.py
+- [X] T004 Create SandboxExecutor service class structure in app/services/sandbox_executor.py
+- [X] T005 Install RestrictedPython package and configure safe globals in app/services/sandbox_executor.py
+- [X] T006 Implement script compilation with RestrictedPython in app/services/sandbox_executor.py
+- [X] T007 Implement execution timeout handling (10s max) in app/services/sandbox_executor.py
+- [X] T008 Implement exception catching and formatting in app/services/sandbox_executor.py
+- [X] T009 Configure safe built-ins (dict, list, str, int, float, math) in app/services/sandbox_executor.py
+- [X] T010 Block dangerous operations (file access, imports, system calls) in app/services/sandbox_executor.py
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -55,14 +55,14 @@
 
 ### Implementation for User Story 1
 
-- [ ] T011 [US1] Create custom_calculation blueprint in app/routes/custom_calculation.py
-- [ ] T012 [US1] Implement POST /api/custom-calculations/execute endpoint in app/routes/custom_calculation.py
-- [ ] T013 [US1] Add request validation for script, column_name, stock_symbols in app/routes/custom_calculation.py
-- [ ] T014 [US1] Implement stock data fetching from TimescaleDB in app/routes/custom_calculation.py
-- [ ] T015 [US1] Integrate with SandboxExecutor for script execution in app/routes/custom_calculation.py
-- [ ] T016 [US1] Implement result aggregation and JSON response formatting in app/routes/custom_calculation.py
-- [ ] T017 [US1] Add error handling for invalid requests in app/routes/custom_calculation.py
-- [ ] T018 [US1] Register custom_calculation blueprint in app/main.py
+- [X] T011 [US1] Create custom_calculation blueprint in app/routes/custom_calculation.py
+- [X] T012 [US1] Implement POST /api/custom-calculations/execute endpoint in app/routes/custom_calculation.py
+- [X] T013 [US1] Add request validation for script, column_name, stock_symbols in app/routes/custom_calculation.py
+- [X] T014 [US1] Implement stock data fetching from TimescaleDB in app/routes/custom_calculation.py
+- [X] T015 [US1] Integrate with SandboxExecutor for script execution in app/routes/custom_calculation.py
+- [X] T016 [US1] Implement result aggregation and JSON response formatting in app/routes/custom_calculation.py
+- [X] T017 [US1] Add error handling for invalid requests in app/routes/custom_calculation.py
+- [X] T018 [US1] Register custom_calculation blueprint in app/main.py
 
 **Checkpoint**: At this point, User Story 1 should be fully functional and testable independently
 
