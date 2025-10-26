@@ -1,0 +1,142 @@
+{
+  "api_contracts": {
+    "stock_list_with_price_data": {
+      "description": "Returns list of stocks with latest price data including price, change percentage, and volume",
+      "endpoint": "GET /api/stock-price/list",
+      "query_parameters": {
+        "market_code": {
+          "type": "string",
+          "required": false,
+          "description": "Filter by market code (SH/SZ/BJ)",
+          "enum": ["SH", "SZ", "BJ"]
+        },
+        "is_active": {
+          "type": "string",
+          "required": false,
+          "default": "Y",
+          "description": "Filter by active status (Y/N)",
+          "enum": ["Y", "N"]
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "default": 100,
+          "max": 10000,
+          "description": "Maximum number of records to return"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "default": 0,
+          "description": "Number of records to skip for pagination"
+        }
+      },
+      "response_success": {
+        "code": 200,
+        "message": "查询到 2 只股票",
+        "timestamp": "2025-01-27 10:30:45",
+        "data": [
+          {
+            "symbol": "SH.600519",
+            "stock_name": "贵州茅台",
+            "market_code": "SH",
+            "is_active": "Y",
+            "last_sync_date": "2025-01-26T00:00:00",
+            "close_price": 1750.50,
+            "price_change_pct": 2.35,
+            "volume": 12500000,
+            "latest_trade_date": "2025-01-26"
+          },
+          {
+            "symbol": "SZ.000001",
+            "stock_name": "平安银行",
+            "market_code": "SZ",
+            "is_active": "Y",
+            "last_sync_date": null,
+            "close_price": null,
+            "price_change_pct": null,
+            "volume": null,
+            "latest_trade_date": null
+          }
+        ],
+        "total": 250,
+        "count": 2
+      },
+      "response_fields": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Stock symbol with market prefix (e.g., 'SH.600519')"
+        },
+        "stock_name": {
+          "type": "string",
+          "required": true,
+          "description": "Stock name (e.g., '贵州茅台')"
+        },
+        "market_code": {
+          "type": "string",
+          "required": true,
+          "description": "Market code (SH/SZ/BJ)"
+        },
+        "is_active": {
+          "type": "string",
+          "required": true,
+          "description": "Active status (Y/N)"
+        },
+        "last_sync_date": {
+          "type": "string",
+          "format": "ISO 8601",
+          "required": false,
+          "description": "Last synchronization timestamp",
+          "nullable": true,
+          "example": "2025-01-26T00:00:00"
+        },
+        "close_price": {
+          "type": "number",
+          "format": "DECIMAL(10,4)",
+          "required": false,
+          "description": "Latest available closing price",
+          "nullable": true,
+          "example": 1750.50
+        },
+        "price_change_pct": {
+          "type": "number",
+          "format": "DECIMAL(8,4)",
+          "required": false,
+          "description": "Price change percentage for latest trading day (e.g., 2.35 for +2.35%)",
+          "nullable": true,
+          "example": 2.35
+        },
+        "volume": {
+          "type": "integer",
+          "format": "BIGINT",
+          "required": false,
+          "description": "Trading volume for latest trading day (in shares)",
+          "nullable": true,
+          "example": 12500000
+        },
+        "latest_trade_date": {
+          "type": "string",
+          "format": "YYYY-MM-DD",
+          "required": false,
+          "description": "Date of latest available price data",
+          "nullable": true,
+          "example": "2025-01-26"
+        }
+      },
+      "error_responses": {
+        "400": {
+          "code": 400,
+          "message": "参数错误",
+          "error": "limit参数不能超过10000"
+        },
+        "500": {
+          "code": 500,
+          "message": "查询失败",
+          "error": "Database connection error"
+        }
+      }
+    }
+  }
+}
+
