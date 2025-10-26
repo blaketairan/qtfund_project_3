@@ -1,11 +1,11 @@
 # 股票数据查询服务 Constitution
 
 <!--
-Sync Impact Report (v1.0.0):
-  Version change: 0.0.0 → 1.0.0 (initial version)
-  Modified principles: N/A (initial creation)
-  Added sections: Core Development Principles, Development Workflow, Quality Gates
-  Removed sections: N/A
+Sync Impact Report (v1.1.0):
+  Version change: 1.0.0 → 1.1.0 (MINOR: Added API contract validation principle)
+  Modified principles: None
+  Added sections: API Contract Compliance (Principle VI)
+  Removed sections: None
   Templates requiring updates: 
     ✅ plan-template.md - updated check
     ✅ spec-template.md - aligned scope
@@ -75,6 +75,28 @@ Push之前必须验证代码可以正常工作。
 - 保留feature规格文档作为历史记录
 
 **原因**: 保持文档与代码同步，便于后续维护和新成员理解。
+
+### VI. API Contract Compliance
+
+API响应格式必须与文档契约完全一致，确保前端能够正确解析。
+
+**规则**:
+- API返回结构必须与spec文档定义的响应结构完全匹配
+- 文档中定义的数组位置（如 `data` vs `data.items`）必须严格执行
+- 必须提供完整的响应示例，包括真实的JSON结构
+- 如果响应格式与前端期望不匹配，必须立即修正后端实现或更新契约文档
+- 不得返回与契约不一致的结构（例如文档说返回 `data.items`，实际返回 `data`）
+
+**原因**: 响应格式不一致会导致前端解析失败，产生生产环境bug。严格遵循契约可以确保前后端协作顺畅。
+
+**示例错误**:
+```python
+# ❌ 错误：文档约定返回 data.items，实际返回 data
+return {"code": 200, "data": items}  # 与契约不匹配
+
+# ✅ 正确：与契约一致
+return {"code": 200, "data": {"items": items, "total": len(items)}}
+```
 
 ## Development Workflow
 
@@ -152,4 +174,4 @@ fix: 修复stock-price路由中缺失的create_success_response导入
 - **MINOR**: 新增原则或工作流改进
 - **PATCH**: 澄清说明或非实质性调整
 
-**Version**: 1.0.0 | **Ratified**: 2025-10-26 | **Last Amended**: 2025-10-26
+**Version**: 1.1.0 | **Ratified**: 2025-10-26 | **Last Amended**: 2025-01-27
