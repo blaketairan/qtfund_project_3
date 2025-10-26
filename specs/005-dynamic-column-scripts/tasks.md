@@ -12,9 +12,9 @@
 
 **Purpose**: Review existing code structure and identify modification points
 
-- [ ] T001 Review existing `app/routes/stock_price.py` structure
-- [ ] T002 Review existing `app/services/sandbox_executor.py` API
-- [ ] T003 Review existing `app/models/custom_script.py` model
+- [x] T001 Review existing `app/routes/stock_price.py` structure
+- [x] T002 Review existing `app/services/sandbox_executor.py` API
+- [x] T003 Review existing `app/models/custom_script.py` model
 
 ---
 
@@ -26,15 +26,15 @@
 
 ### Implementation Tasks
 
-- [ ] T004 [P] Parse `script_ids` query parameter in `app/routes/stock_price.py` `list_stocks()` endpoint
-- [ ] T005 [P] Validate `script_ids` format (array of integers, reasonable limit to prevent abuse)
-- [ ] T006 Load scripts from database using script_ids in `app/routes/stock_price.py`
-- [ ] T007 Validate all script_ids exist in database in `app/routes/stock_price.py`
-- [ ] T008 Execute scripts for each stock in result set using SandboxExecutor in `app/routes/stock_price.py`
-- [ ] T009 Append script_results to each stock record in `app/routes/stock_price.py`
-- [ ] T010 Handle script execution errors gracefully (return null for failed scripts) in `app/routes/stock_price.py`
-- [ ] T011 Add logging for script execution operations in `app/routes/stock_price.py`
-- [ ] T012 Ensure script calculations respect limit, offset, and market_code filters in `app/routes/stock_price.py`
+- [x] T004 [P] Parse `script_ids` query parameter in `app/routes/stock_price.py` `list_stocks()` endpoint
+- [x] T005 [P] Validate `script_ids` format (array of integers, reasonable limit to prevent abuse)
+- [x] T006 Load scripts from database using script_ids in `app/routes/stock_price.py`
+- [x] T007 Validate all script_ids exist in database in `app/routes/stock_price.py`
+- [x] T008 Execute scripts for each stock in result set using SandboxExecutor in `app/routes/stock_price.py`
+- [x] T009 Append script_results to each stock record in `app/routes/stock_price.py`
+- [x] T010 Handle script execution errors gracefully (return null for failed scripts) in `app/routes/stock_price.py`
+- [x] T011 Add logging for script execution operations in `app/routes/stock_price.py`
+- [x] T012 Ensure script calculations respect limit, offset, and market_code filters in `app/routes/stock_price.py`
 
 ---
 

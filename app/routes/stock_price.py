@@ -127,7 +127,7 @@ def get_stock_info(symbol: str):
 
 @stock_price_bp.route('/list', methods=['GET'])
 def list_stocks():
-    """列出所有股票（包含最新价格信息）"""
+    """列出所有股票（包含最新价格信息和可选的脚本计算结果）"""
     try:
         market_code = request.args.get('market_code')
         is_active = request.args.get('is_active', 'Y')
@@ -159,18 +159,85 @@ def list_stocks():
             offset=offset
         )
         
-        if result['success']:
-            return create_success_response(
-                data=result['data'],
-                total=result['total'],
-                message=f"查询到 {result['count']} 只股票"
-            )
-        else:
+        if not result['success']:
             return create_error_response(
                 500,
                 "查询失败",
                 result.get('error', '未知错误')
             )
+        
+        # 解析并处理 script_ids 参数
+        script_ids_param = request.args.get('script_ids')
+        stocks = result['data']
+        
+        if script_ids_param:
+            try:
+                import json
+                script_ids = json.loads(script_ids_param)
+                
+                if not isinstance(script_ids, list):
+                    return create_error_response(400, "参数错误", "script_ids must be array")
+                
+                # 转换并验证为整数数组
+                script_ids = [int(sid) for sid in script_ids]
+                
+                # 限制数量防止滥用
+                if len(script_ids) > 50:
+                    return create_error_response(400, "参数错误", "Too many scripts requested")
+                
+                # 执行脚本
+                from app.services.sandbox_executor import SandboxExecutor
+                from app.models.custom_script import CustomScript
+                from database.connection import db_manager
+                
+                # 加载脚本
+                with db_manager.get_session() as session:
+                    scripts = session.query(CustomScript).filter(
+                        CustomScript.id.in_(script_ids)
+                    ).all()
+                    
+                    found_ids = {s.id for s in scripts}
+                    missing_ids = set(script_ids) - found_ids
+                    
+                    if missing_ids:
+                        return create_error_response(
+                            404,
+                            "脚本不存在",
+                            f"Script IDs not found: {list(missing_ids)}"
+                        )
+                    
+                    scripts_dict = {s.id: s.code for s in scripts}
+                
+                # 为每只股票执行脚本
+                executor = SandboxExecutor()
+                for stock in stocks:
+                    script_results = {}
+                    
+                    for script_id, script_code in scripts_dict.items():
+                        try:
+                            script_result, error = executor.execute(script_code, context={'row': stock})
+                            script_results[str(script_id)] = script_result if error is None else None
+                        except Exception as e:
+                            logger.error(f"Script {script_id} execution error for {stock.get('symbol')}: {e}")
+                            script_results[str(script_id)] = None
+                    
+                    stock['script_results'] = script_results
+                
+                logger.info(f"Executed {len(scripts_dict)} scripts for {len(stocks)} stocks")
+            
+            except json.JSONDecodeError:
+                return create_error_response(400, "参数错误", "Invalid script_ids JSON format")
+            except ValueError as e:
+                return create_error_response(400, "参数错误", f"Invalid script_ids: {str(e)}")
+            except Exception as e:
+                logger.error(f"Script execution error: {e}")
+                return create_error_response(500, "脚本执行失败", str(e))
+        
+        return create_success_response(
+            data=stocks,
+            total=result['total'],
+            message=f"查询到 {result['count']} 只股票"
+        )
             
     except Exception as e:
         logger.error(f"列出股票异常: {e}")
