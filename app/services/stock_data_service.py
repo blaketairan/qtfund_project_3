@@ -304,4 +304,33 @@ class StockDataService:
                 'count': 0,
                 'error': str(e)
             }
+    
+    def get_all_active_stocks(self, market_code: Optional[str] = None) -> List[str]:
+        """
+        获取所有活跃股票代码
+        
+        Args:
+            market_code: 市场代码过滤（可选，SH/SZ/BJ）
+            
+        Returns:
+            List[str]: 股票代码列表
+        """
+        try:
+            from database.connection import db_manager
+            from models.stock_data import StockInfo
+            
+            with db_manager.get_session() as session:
+                query = session.query(StockInfo.symbol).filter(
+                    StockInfo.is_active == 'Y'
+                )
+                
+                if market_code:
+                    query = query.filter(StockInfo.market_code == market_code)
+                
+                results = query.all()
+                return [row.symbol for row in results]
+                
+        except Exception as e:
+            logger.error(f"获取所有活跃股票失败: {e}")
+            return []
 

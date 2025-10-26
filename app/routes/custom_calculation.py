@@ -43,14 +43,25 @@ def execute_script():
         if not column_name:
             return create_error_response(400, "参数错误", "column_name不能为空")
         
-        if not stock_symbols or not isinstance(stock_symbols, list):
-            return create_error_response(400, "参数错误", "stock_symbols必须是非空数组")
+        if stock_symbols is None:
+            stock_symbols = []
+        
+        if not isinstance(stock_symbols, list):
+            return create_error_response(400, "参数错误", "stock_symbols必须是数组")
+        
+        # 处理空数组情况：获取所有活跃股票
+        if len(stock_symbols) == 0:
+            from app.services.stock_data_service import StockDataService
+            service = StockDataService()
+            all_stocks = service.get_all_active_stocks()
+            stock_symbols = all_stocks
+            
+            if not stock_symbols:
+                return create_error_response(404, "未找到股票", "数据库中没有活跃股票")
+            logger.info(f"自动获取 {len(stock_symbols)} 只活跃股票")
         
         if len(stock_symbols) > 200:
             return create_error_response(400, "参数错误", "stock_symbols最多支持200个")
-        
-        if len(stock_symbols) == 0:
-            return create_error_response(400, "参数错误", "stock_symbols必须包含至少1个股票")
         
         logger.info(f"执行自定义计算: column_name={column_name}, stocks={len(stock_symbols)}")
         
@@ -69,6 +80,8 @@ def execute_script():
         
         # 获取股票数据（TODO: 从数据库获取）
         results = []
+        successful = 0
+        failed = 0
         
         # 对每个股票执行脚本
         for symbol in stock_symbols:
@@ -82,6 +95,7 @@ def execute_script():
                         "value": None,
                         "error": "股票数据不存在"
                     })
+                    failed += 1
                     continue
                 
                 # 执行脚本
@@ -93,6 +107,11 @@ def execute_script():
                     "error": error
                 })
                 
+                if error:
+                    failed += 1
+                else:
+                    successful += 1
+                
             except Exception as e:
                 logger.error(f"执行脚本失败，股票: {symbol}, 错误: {e}")
                 results.append({
@@ -100,10 +119,22 @@ def execute_script():
                     "value": None,
                     "error": str(e)
                 })
+                failed += 1
+        
+        # 准备响应数据
+        response_data = {"results": results}
+        
+        # 添加执行摘要（当处理多只股票时）
+        if len(results) > 1:
+            response_data["summary"] = {
+                "total": len(results),
+                "successful": successful,
+                "failed": failed
+            }
         
         return create_success_response(
-            data={"results": results},
-            message="执行成功"
+            data=response_data,
+            message=f"执行成功，处理 {len(results)} 只股票"
         )
         
     except Exception as e:

@@ -1,0 +1,87 @@
+{
+  "api_contracts": {
+    "custom_calculation_execute_all_stocks": {
+      "description": "Execute custom Python script for all active stocks (when stock_symbols is empty)",
+      "endpoint": "POST /api/custom-calculations/execute",
+      "request_parameters": {
+        "script": {
+          "type": "string",
+          "required": true,
+          "description": "Python script code to execute"
+        },
+        "stock_symbols": {
+          "type": "array",
+          "required": false,
+          "description": "Array of stock symbols (empty array means all active stocks)",
+          "minItems": 0,
+          "maxItems": 200,
+          "default": []
+        },
+        "column_name": {
+          "type": "string",
+          "required": true,
+          "description": "Column name for the calculated result"
+        },
+        "script_id": {
+          "type": "integer",
+          "required": false,
+          "description": "ID of saved script to execute (alternative to providing script)"
+        }
+      },
+      "behavior": {
+        "empty_array": "When stock_symbols is empty array [], API fetches all active stocks from database",
+        "specific_symbols": "When stock_symbols contains symbols, API uses those symbols (backward compatible)",
+        "no_parameter": "When stock_symbols is omitted, API fetches all active stocks (treated as empty array)"
+      },
+      "response_success_with_all_stocks": {
+        "code": 200,
+        "message": "执行成功",
+        "data": {
+          "results": [
+            {"symbol": "SH.600519", "value": 1250.5, "error": null},
+            {"symbol": "SZ.000001", "value": 15.2, "error": null}
+          ],
+          "summary": {
+            "total": 1500,
+            "successful": 1498,
+            "failed": 2
+          }
+        }
+      },
+      "response_success_with_specific_symbols": {
+        "code": 200,
+        "message": "执行成功",
+        "data": {
+          "results": [
+            {"symbol": "SH.600519", "value": 1250.5, "error": null},
+            {"symbol": "SZ.000001", "value": 15.2, "error": null}
+          ]
+        }
+      },
+      "response_error_400": {
+        "code": 400,
+        "message": "参数错误",
+        "error": "script或script_id不能为空"
+      },
+      "response_fields": {
+        "results": {
+          "description": "Array of calculation results (one per stock)",
+          "items": {
+            "symbol": "Stock identifier (e.g., 'SH.600519')",
+            "value": "Calculated value (number or null if error)",
+            "error": "Error message if calculation failed (string or null)"
+          }
+        },
+        "summary": {
+          "description": "Execution summary for all-stocks mode",
+          "fields": {
+            "total": "Total number of stocks processed",
+            "successful": "Number of successful calculations",
+            "failed": "Number of failed calculations"
+          }
+        }
+      }
+    }
+  }
+}
+
