@@ -57,7 +57,52 @@ class SandboxExecutor:
         safe['float'] = float
         safe['bool'] = bool
         
+        # 添加历史数据访问函数
+        safe['get_history'] = self._get_history_function
+        
         self._safe_globals = safe
+    
+    def _get_history_function(self, symbol: str, days: int) -> list:
+        """
+        获取股票历史价格数据（提供给脚本调用）
+        
+        Args:
+            symbol: 股票代码（如 'SH.600519'）
+            days: 获取交易天数（最多1000天）
+            
+        Returns:
+            历史价格数据列表，每个元素包含 close_price, trade_date, volume, price_change_pct
+        """
+        # 输入验证
+        if not symbol or not isinstance(symbol, str):
+            return []
+        
+        if not isinstance(days, int) or days < 1 or days > 1000:
+            days = 250  # 默认250天
+        
+        try:
+            from database.connection import db_manager
+            from models.stock_data import StockDailyData
+            from sqlalchemy import desc
+            
+            with db_manager.get_session() as session:
+                query = session.query(StockDailyData).filter(
+                    StockDailyData.symbol == symbol
+                ).order_by(desc(StockDailyData.trade_date)).limit(days)
+                
+                results = query.all()
+                
+                # 格式化返回数据
+                return [{
+                    'close_price': float(r.close_price) if r.close_price else None,
+                    'trade_date': r.trade_date.strftime('%Y-%m-%d') if r.trade_date else None,
+                    'volume': int(r.volume) if r.volume else 0,
+                    'price_change_pct': float(r.price_change_pct) if r.price_change_pct else None
+                } for r in results]
+                
+        except Exception as e:
+            logger.error(f"Error retrieving history for {symbol}: {e}")
+            return []
     
     def execute(self, script_code: str, context: Optional[Dict[str, Any]] = None) -> Tuple[Optional[Any], Optional[str]]:
         """

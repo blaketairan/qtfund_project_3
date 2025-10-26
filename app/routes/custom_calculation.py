@@ -285,3 +285,105 @@ def _get_stock_data(symbol: str) -> Optional[Dict[str, Any]]:
         logger.error(f"获取股票数据失败: {symbol}, 错误: {e}")
         return None
 
+
+@custom_calculation_bp.route('/functions', methods=['GET'])
+def list_available_functions():
+    """获取可用于脚本的函数和模块列表（用于前端显示帮助）"""
+    try:
+        # 定义可用的函数
+        functions_data = {
+            "functions": [
+                {
+                    "name": "get_history",
+                    "signature": "get_history(symbol: str, days: int) -> list",
+                    "description": "获取股票的历史价格数据",
+                    "parameters": [
+                        {
+                            "name": "symbol",
+                            "type": "str",
+                            "description": "股票代码（如 'SH.600519'）"
+                        },
+                        {
+                            "name": "days",
+                            "type": "int",
+                            "description": "获取的交易天数（1-1000，默认250）"
+                        }
+                    ],
+                    "returns": "历史价格数据列表，每个元素包含 close_price, trade_date, volume, price_change_pct",
+                    "example": "history = get_history('SH.600519', 250)"
+                }
+            ],
+            "modules": [
+                {
+                    "name": "math",
+                    "description": "Python数学模块",
+                    "functions": [
+                        {
+                            "name": "exp",
+                            "description": "计算e的x次方"
+                        },
+                        {
+                            "name": "log",
+                            "description": "计算自然对数"
+                        },
+                        {
+                            "name": "pow",
+                            "description": "计算x的y次方"
+                        },
+                        {
+                            "name": "sqrt",
+                            "description": "计算平方根"
+                        },
+                        {
+                            "name": "sin, cos, tan",
+                            "description": "三角函数"
+                        }
+                    ]
+                }
+            ],
+            "builtins": [
+                {
+                    "name": "abs",
+                    "description": "绝对值"
+                },
+                {
+                    "name": "min, max, sum",
+                    "description": "数学函数"
+                },
+                {
+                    "name": "round",
+                    "description": "四舍五入"
+                },
+                {
+                    "name": "len, range, zip, enumerate",
+                    "description": "序列操作函数"
+                },
+                {
+                    "name": "str, int, float, bool, list, dict, tuple, set",
+                    "description": "类型转换和构造"
+                }
+            ],
+            "context": {
+                "name": "row",
+                "description": "当前股票数据对象",
+                "properties": [
+                    {"name": "symbol", "type": "str", "description": "股票代码"},
+                    {"name": "stock_name", "type": "str", "description": "股票名称"},
+                    {"name": "close_price", "type": "float", "description": "收盘价"},
+                    {"name": "volume", "type": "int", "description": "成交量"},
+                    {"name": "price_change_pct", "type": "float", "description": "涨跌幅"},
+                    {"name": "trade_date", "type": "str", "description": "交易日期"}
+                ],
+                "example": "price = row['close_price']"
+            }
+        }
+        
+        return create_success_response(
+            data=functions_data,
+            message="查询成功"
+        )
+        
+    except Exception as e:
+        logger.error(f"获取函数列表失败: {e}")
+        return create_error_response(500, "查询失败", str(e))
+
