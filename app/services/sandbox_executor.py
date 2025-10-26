@@ -124,6 +124,9 @@ class SandboxExecutor:
             
             if context:
                 exec_globals.update(context)
+                logger.info(f"Script execution context keys: {list(context.keys())}")
+                if 'row' in context:
+                    logger.info(f"Row data keys: {list(context['row'].keys()) if isinstance(context['row'], dict) else 'not a dict'}")
             
             # 编译脚本（使用RestrictedPython）
             compile_result = compile_restricted(
@@ -155,15 +158,24 @@ class SandboxExecutor:
                 # 尝试获取返回值
                 result = exec_globals.get('result', None)
                 
+                logger.info(f"Script execution result: {result}, type: {type(result).__name__}")
+                
                 # 允许 result 为 None（表示数据不足等情况）
                 # 如果 result 有值，验证类型
                 if result is not None and not isinstance(result, (int, float, bool, type(None))):
+                    logger.error(f"Invalid return type: {type(result).__name__}, value: {result}")
                     return None, f"Return value must be a number, bool, or None, got {type(result).__name__}"
                 
                 # 返回 result（可能是 None）和 None 错误
+                if result is None:
+                    logger.warning("Script returned None")
+                
                 return result, None
                 
             except Exception as e:
+                logger.error(f"Script execution runtime error: {e}")
+                import traceback
+                logger.error(f"Traceback: {traceback.format_exc()}")
                 return None, self._format_runtime_error(e)
                 
         except Exception as e:

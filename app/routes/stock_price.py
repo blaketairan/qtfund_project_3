@@ -209,10 +209,14 @@ def list_stocks():
                     
                     for script_id, script_code in scripts_dict.items():
                         try:
+                            logger.info(f"Executing script {script_id} for stock {stock.get('symbol')}")
                             script_result, error = executor.execute(script_code, context={'row': stock})
+                            logger.info(f"Script {script_id} result: {script_result}, error: {error}")
                             script_results[str(script_id)] = script_result if error is None else None
                         except Exception as e:
                             logger.error(f"Script {script_id} execution error for {stock.get('symbol')}: {e}")
+                            import traceback
+                            logger.error(f"Traceback: {traceback.format_exc()}")
                             script_results[str(script_id)] = None
                     
                     stock['script_results'] = script_results
