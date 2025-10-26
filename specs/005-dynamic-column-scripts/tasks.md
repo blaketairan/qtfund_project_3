@@ -42,13 +42,13 @@
 
 **Purpose**: Verify implementation works correctly
 
-- [ ] T013 Test API with valid script_ids parameter
-- [ ] T014 Test API with non-existent script_ids (should return 404)
-- [ ] T015 Test API with invalid script_ids format (should return 400)
-- [ ] T016 Test script execution only for stocks in query result set (limit, offset, market_code)
-- [ ] T017 Test error handling when script execution fails for specific stocks
-- [ ] T018 Test response structure matches API contract in `specs/005-dynamic-column-scripts/contracts/api-contracts.json`
-- [ ] T019 Verify backward compatibility (API works without script_ids parameter)
+- [x] T013 Test API with valid script_ids parameter
+- [x] T014 Test API with non-existent script_ids (should return 404)
+- [x] T015 Test API with invalid script_ids format (should return 400)
+- [x] T016 Test script execution only for stocks in query result set (limit, offset, market_code)
+- [x] T017 Test error handling when script execution fails for specific stocks
+- [x] T018 Test response structure matches API contract in `specs/005-dynamic-column-scripts/contracts/api-contracts.json`
+- [x] T019 Verify backward compatibility (API works without script_ids parameter)
 
 ---
 
