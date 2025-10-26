@@ -49,6 +49,11 @@ def execute_script():
         if len(stock_symbols) > 200:
             return create_error_response(400, "参数错误", "stock_symbols最多支持200个")
         
+        if len(stock_symbols) == 0:
+            return create_error_response(400, "参数错误", "stock_symbols必须包含至少1个股票")
+        
+        logger.info(f"执行自定义计算: column_name={column_name}, stocks={len(stock_symbols)}")
+        
         # 导入服务
         from app.services.sandbox_executor import SandboxExecutor
         executor = SandboxExecutor()
