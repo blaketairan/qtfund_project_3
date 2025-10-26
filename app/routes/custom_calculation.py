@@ -22,10 +22,15 @@ def execute_script():
         # 获取请求参数
         data = request.get_json() or {}
         
+        logger.info(f"=== 收到API请求 ===")
+        logger.info(f"请求数据: {str(data)[:200] if data else 'empty'}")
+        
         script = data.get('script', '')
         script_id = data.get('script_id')
         column_name = data.get('column_name', '')
         stock_symbols = data.get('stock_symbols', [])
+        
+        logger.info(f"解析参数: script长度={len(script)}, script_id={script_id}, column_name={column_name}, stock_symbols类型={type(stock_symbols)}, stock_symbols值={stock_symbols}")
         
         # 如果提供了script_id，从数据库加载脚本
         if script_id:
@@ -38,16 +43,19 @@ def execute_script():
         
         # 验证参数
         if not script:
+            logger.error(f"参数验证失败: script为空, script_id={script_id}")
             return create_error_response(400, "参数错误", "script或script_id不能为空")
         
         if not column_name:
+            logger.error(f"参数验证失败: column_name为空")
             return create_error_response(400, "参数错误", "column_name不能为空")
         
         if stock_symbols is None:
             stock_symbols = []
         
         if not isinstance(stock_symbols, list):
-            return create_error_response(400, "参数错误", "stock_symbols必须是数组")
+            logger.error(f"参数验证失败: stock_symbols不是数组, 类型={type(stock_symbols)}, 值={stock_symbols}")
+            return create_error_response(400, "参数错误", f"stock_symbols必须是数组，当前类型: {type(stock_symbols)}")
         
         # 处理空数组情况：获取所有活跃股票
         if len(stock_symbols) == 0:
