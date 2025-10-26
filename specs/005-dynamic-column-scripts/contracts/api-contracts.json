@@ -1,0 +1,163 @@
+{
+  "api_contracts": {
+    "list_stocks_with_scripts": {
+      "description": "Returns list of stocks with optional script calculations applied to the query result set",
+      "endpoint": "GET /api/stock-price/list",
+      "query_parameters": {
+        "market_code": {
+          "type": "string",
+          "required": false,
+          "description": "Filter by market code (SH/SZ/BJ)",
+          "enum": ["SH", "SZ", "BJ"]
+        },
+        "is_active": {
+          "type": "string",
+          "required": false,
+          "default": "Y",
+          "description": "Filter by active status (Y/N)",
+          "enum": ["Y", "N"]
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "default": 100,
+          "max": 10000,
+          "description": "Maximum number of stocks to return"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "default": 0,
+          "description": "Number of records to skip for pagination"
+        },
+        "script_ids": {
+          "type": "array[integer]",
+          "required": false,
+          "description": "Array of script IDs to calculate for stocks in the result set",
+          "example": [1, 2, 3]
+        }
+      },
+      "response_success": {
+        "code": 200,
+        "message": "查询到 2 只股票",
+        "timestamp": "2025-01-27 10:30:45",
+        "data": [
+          {
+            "symbol": "SH.600519",
+            "stock_name": "贵州茅台",
+            "market_code": "SH",
+            "is_active": "Y",
+            "close_price": 1750.50,
+            "price_change_pct": 2.35,
+            "volume": 12500000,
+            "latest_trade_date": "2025-01-26",
+            "script_results": {
+              "1": 0.14,
+              "2": 225.67
+            }
+          },
+          {
+            "symbol": "SZ.000001",
+            "stock_name": "平安银行",
+            "market_code": "SZ",
+            "is_active": "Y",
+            "close_price": 12.34,
+            "price_change_pct": -0.45,
+            "volume": 12345678,
+            "latest_trade_date": "2025-01-26",
+            "script_results": {
+              "1": 0.10,
+              "2": 134.56
+            }
+          }
+        ],
+        "total": 250,
+        "count": 2
+      },
+      "response_fields": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Stock symbol with market prefix"
+        },
+        "stock_name": {
+          "type": "string",
+          "required": true,
+          "description": "Stock name"
+        },
+        "market_code": {
+          "type": "string",
+          "required": true,
+          "description": "Market code (SH/SZ/BJ)"
+        },
+        "is_active": {
+          "type": "string",
+          "required": true,
+          "description": "Active status (Y/N)"
+        },
+        "close_price": {
+          "type": "number",
+          "required": false,
+          "nullable": true,
+          "description": "Latest available closing price"
+        },
+        "price_change_pct": {
+          "type": "number",
+          "required": false,
+          "nullable": true,
+          "description": "Price change percentage"
+        },
+        "volume": {
+          "type": "integer",
+          "required": false,
+          "nullable": true,
+          "description": "Trading volume"
+        },
+        "latest_trade_date": {
+          "type": "string",
+          "format": "YYYY-MM-DD",
+          "required": false,
+          "nullable": true,
+          "description": "Date of latest available data"
+        },
+        "script_results": {
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "description": "Calculated results from requested scripts, keyed by script ID",
+          "additionalProperties": {
+            "type": "number",
+            "nullable": true
+          },
+          "example": {
+            "1": 0.14,
+            "2": 225.67,
+            "3": null
+          }
+        }
+      },
+      "response_constraints": {
+        "script_results": "Only included when script_ids parameter is provided",
+        "calculation_scope": "Script calculations apply only to stocks in the query result set (after limit, offset, and market_code filters)"
+      },
+      "error_responses": {
+        "400": {
+          "code": 400,
+          "message": "参数错误",
+          "error": "script_ids must be an array of valid script IDs"
+        },
+        "404": {
+          "code": 404,
+          "message": "脚本不存在",
+          "error": "One or more script_ids not found"
+        },
+        "500": {
+          "code": 500,
+          "message": "查询失败",
+          "error": "Database or script execution error"
+        }
+      }
+    }
+  }
+}
+
