@@ -60,12 +60,30 @@ class SandboxExecutor:
         
         # 添加 RestrictedPython 必需的内置函数
         # https://restrictedpython.readthedocs.io/en/latest/policies.html
-        safe['_getitem_'] = lambda obj, key: obj[key]  # Support dict/list access
-        safe['_getiter_'] = lambda obj: iter(obj)  # Support iteration
-        safe['_unpack_sequence_'] = lambda obj: obj  # Support tuple unpacking (e.g., a, b = func())
-        safe['_iter_unpack_sequence_'] = lambda seq, args, ctx: seq  # Support tuple unpacking in for loop (e.g., for a, b in iter())
-        safe['_write_'] = lambda obj: obj  # Support write operations in comprehensions
-        safe['_inplacevar_'] = lambda op, obj, arg, val: obj  # Support in-place operations
+        def _getitem(obj, key):
+            return obj[key]
+        
+        def _getiter(obj):
+            return iter(obj)
+        
+        def _unpack_sequence(sequence):
+            return sequence
+        
+        def _iter_unpack_sequence(sequence, count, context):
+            return sequence
+        
+        def _write(obj):
+            return obj
+        
+        def _inplacevar(op, x, y):
+            return op(x, y)
+        
+        safe['_getitem_'] = _getitem  # Support dict/list access
+        safe['_getiter_'] = _getiter  # Support iteration
+        safe['_unpack_sequence_'] = _unpack_sequence  # Support tuple unpacking (e.g., a, b = func())
+        safe['_iter_unpack_sequence_'] = _iter_unpack_sequence  # Support tuple unpacking in for loop
+        safe['_write_'] = _write  # Support write operations in comprehensions
+        safe['_inplacevar_'] = _inplacevar  # Support in-place operations
         safe['print_'] = print  # Support print statement (RestrictedPython style)
         
         # 添加历史数据访问函数
