@@ -167,19 +167,13 @@ def list_stocks():
             )
         
         # 解析并处理 script_ids 参数
-        script_ids_param = request.args.get('script_ids')
+        script_ids_param = request.args.getlist('script_ids')
         stocks = result['data']
         
         if script_ids_param:
             try:
-                import json
-                script_ids = json.loads(script_ids_param)
-                
-                if not isinstance(script_ids, list):
-                    return create_error_response(400, "参数错误", "script_ids must be array")
-                
                 # 转换并验证为整数数组
-                script_ids = [int(sid) for sid in script_ids]
+                script_ids = [int(sid) for sid in script_ids_param]
                 
                 # 限制数量防止滥用
                 if len(script_ids) > 50:
