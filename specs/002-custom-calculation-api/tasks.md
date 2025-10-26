@@ -76,12 +76,12 @@
 
 ### Implementation for User Story 2
 
-- [ ] T019 [P] [US2] Test restricted imports (os, sys, importlib) in app/services/sandbox_executor.py
-- [ ] T020 [P] [US2] Test file operations (open, read, write) blocking in app/services/sandbox_executor.py
-- [ ] T021 [P] [US2] Test network operations blocking in app/services/sandbox_executor.py
-- [ ] T022 [P] [US2] Test system calls (subprocess, eval, exec) blocking in app/services/sandbox_executor.py
-- [ ] T023 [US2] Verify all blocked operations fail gracefully with error messages in app/services/sandbox_executor.py
-- [ ] T024 [US2] Add logging for all security violations in app/services/sandbox_executor.py
+- [X] T019 [P] [US2] Test restricted imports (os, sys, importlib) in tests/test_sandbox_security.py
+- [X] T020 [P] [US2] Test file operations (open, read, write) blocking in tests/test_sandbox_security.py
+- [X] T021 [P] [US2] Test network operations blocking in tests/test_sandbox_security.py
+- [X] T022 [P] [US2] Test system calls (subprocess, eval, exec) blocking in tests/test_sandbox_security.py
+- [X] T023 [US2] Verify all blocked operations fail gracefully with error messages in tests/test_sandbox_security.py
+- [X] T024 [US2] Add logging for all security violations in app/services/sandbox_executor.py
 
 **Checkpoint**: At this point, User Stories 1 AND 2 should both work independently
 
@@ -119,11 +119,11 @@
 
 ### Implementation for User Story 4
 
-- [ ] T036 [US4] Implement batch stock data fetching from database in app/routes/custom_calculation.py
-- [ ] T037 [US4] Add validation for maximum 200 stocks per request in app/routes/custom_calculation.py
-- [ ] T038 [US4] Implement result aggregation for multiple stocks in app/routes/custom_calculation.py
-- [ ] T039 [US4] Add error handling for invalid stock symbols in app/routes/custom_calculation.py
-- [ ] T040 [US4] Return null/error per symbol when some stocks fail in app/routes/custom_calculation.py
+- [X] T036 [US4] Implement batch stock data fetching from database in app/routes/custom_calculation.py
+- [X] T037 [US4] Add validation for maximum 200 stocks per request in app/routes/custom_calculation.py
+- [X] T038 [US4] Implement result aggregation for multiple stocks in app/routes/custom_calculation.py
+- [X] T039 [US4] Add error handling for invalid stock symbols in app/routes/custom_calculation.py
+- [X] T040 [US4] Return null/error per symbol when some stocks fail in app/routes/custom_calculation.py
 
 **Checkpoint**: All user stories should now be independently functional
 
@@ -133,13 +133,13 @@
 
 **Purpose**: Improvements that affect multiple user stories
 
-- [ ] T041 [P] Add comprehensive logging for all API requests in app/routes/custom_calculation.py
-- [ ] T042 [P] Add performance monitoring for script execution time in app/services/sandbox_executor.py
-- [ ] T043 [P] Update API documentation in README.md with new endpoints
-- [ ] T044 Code cleanup and refactoring in app/routes/custom_calculation.py
-- [ ] T045 Code cleanup and refactoring in app/services/sandbox_executor.py
-- [ ] T046 [P] Review and optimize database queries in app/routes/custom_calculation.py
-- [ ] T047 Add request/response logging for debugging in app/routes/custom_calculation.py
+- [X] T041 [P] Add comprehensive logging for all API requests in app/routes/custom_calculation.py
+- [X] T042 [P] Add performance monitoring for script execution time in app/services/sandbox_executor.py
+- [X] T043 [P] Update API documentation in README.md with new endpoints
+- [X] T044 Code cleanup and refactoring in app/routes/custom_calculation.py
+- [X] T045 Code cleanup and refactoring in app/services/sandbox_executor.py
+- [X] T046 [P] Review and optimize database queries in app/routes/custom_calculation.py
+- [X] T047 Add request/response logging for debugging in app/routes/custom_calculation.py
 
 ---
 
