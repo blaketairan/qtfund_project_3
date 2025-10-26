@@ -64,7 +64,7 @@ class SandboxExecutor:
         执行Python脚本
         
         Args:
-            script_code: Python脚本代码
+            script_code: Python脚本代码（必须包含result=...语句）
             context: 传递给脚本的上下文变量（默认包含'row'数据）
             
         Returns:
@@ -100,7 +100,7 @@ class SandboxExecutor:
                 
                 # 验证返回类型
                 if not isinstance(result, (int, float, bool)):
-                    return None, f"Return value must be a number, got {type(result).__name__}"
+                    return None, f"Return value must be a number or bool, got {type(result).__name__}"
                 
                 return result, None
                 

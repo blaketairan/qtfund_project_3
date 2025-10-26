@@ -58,7 +58,7 @@ def execute_script():
         # 对每个股票执行脚本
         for symbol in stock_symbols:
             try:
-                # TODO: 获取股票数据
+                # 获取股票数据
                 stock_row = _get_stock_data(symbol)
                 
                 if stock_row is None:
@@ -97,12 +97,39 @@ def execute_script():
 
 
 def _get_stock_data(symbol: str) -> Optional[Dict[str, Any]]:
-    """获取股票数据（临时实现，后续从数据库获取）"""
-    # TODO: 从TimescaleDB获取最新的股票数据
-    return {
-        "symbol": symbol,
-        "close_price": 100.0,
-        "volume": 1000000,
-        "turnover": 100000000.0
-    }
+    """从TimescaleDB获取最新的股票数据"""
+    try:
+        from database.connection import db_manager
+        from models.stock_data import StockDailyData
+        from sqlalchemy import desc
+        
+        with db_manager.get_session() as session:
+            # 查询指定股票的最近一条行情数据
+            stock_data = session.query(StockDailyData).filter(
+                StockDailyData.symbol == symbol
+            ).order_by(desc(StockDailyData.trade_date)).first()
+            
+            if stock_data is None:
+                return None
+            
+            # 构建stock_row字典
+            return {
+                "symbol": str(stock_data.symbol),
+                "stock_name": str(stock_data.stock_name),
+                "trade_date": stock_data.trade_date.strftime('%Y-%m-%d') if stock_data.trade_date else None,
+                "open_price": float(stock_data.open_price) if stock_data.open_price is not None else None,
+                "high_price": float(stock_data.high_price) if stock_data.high_price is not None else None,
+                "low_price": float(stock_data.low_price) if stock_data.low_price is not None else None,
+                "close_price": float(stock_data.close_price),
+                "volume": int(stock_data.volume),
+                "turnover": float(stock_data.turnover),
+                "price_change": float(stock_data.price_change) if stock_data.price_change is not None else None,
+                "price_change_pct": float(stock_data.price_change_pct) if stock_data.price_change_pct is not None else None,
+                "premium_rate": float(stock_data.premium_rate) if stock_data.premium_rate is not None else None,
+                "market_code": str(stock_data.market_code)
+            }
+            
+    except Exception as e:
+        logger.error(f"获取股票数据失败: {symbol}, 错误: {e}")
+        return None
 
