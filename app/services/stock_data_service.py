@@ -189,4 +189,119 @@ class StockDataService:
                 'count': 0,
                 'error': str(e)
             }
+    
+    def list_stocks_with_latest_price(self,
+                                      market_code: Optional[str] = None,
+                                      is_active: str = 'Y',
+                                      limit: int = 100,
+                                      offset: int = 0) -> Dict[str, Any]:
+        """
+        从数据库列出所有股票，包含最新的价格信息
+        
+        使用 LATERAL JOIN 高效查询每只股票的最新价格、涨跌幅和成交量。
+        
+        Args:
+            market_code: 市场代码过滤（SH/SZ/BJ）
+            is_active: 是否活跃（Y/N）
+            limit: 返回数量限制
+            offset: 分页偏移量
+            
+        Returns:
+            Dict: 包含股票列表和最新价格数据
+        """
+        try:
+            from database.connection import db_manager
+            from sqlalchemy import text
+            
+            with db_manager.get_session() as session:
+                # 构建 LATERAL JOIN 查询
+                query = """
+                SELECT 
+                    si.symbol,
+                    si.stock_name,
+                    si.market_code,
+                    si.is_active,
+                    si.last_sync_date,
+                    lp.close_price,
+                    lp.volume,
+                    lp.price_change_pct,
+                    lp.trade_date as latest_trade_date
+                FROM stock_info si
+                LEFT JOIN LATERAL (
+                    SELECT 
+                        close_price, 
+                        volume, 
+                        price_change_pct,
+                        trade_date
+                    FROM stock_daily_data sd
+                    WHERE sd.symbol = si.symbol
+                    ORDER BY sd.trade_date DESC
+                    LIMIT 1
+                ) lp ON true
+                WHERE si.is_active = :is_active
+                """
+                
+                params = {
+                    'is_active': is_active,
+                    'market_code': market_code,
+                    'limit': limit,
+                    'offset': offset
+                }
+                
+                # 添加市场过滤
+                if market_code:
+                    query += " AND si.market_code = :market_code"
+                
+                # 添加排序和分页
+                query += " ORDER BY si.symbol LIMIT :limit OFFSET :offset"
+                
+                # 执行查询
+                result = session.execute(text(query), params)
+                rows = result.fetchall()
+                
+                # 格式化结果
+                stock_list = []
+                for row in rows:
+                    stock_list.append({
+                        'symbol': row.symbol,
+                        'stock_name': row.stock_name,
+                        'market_code': row.market_code,
+                        'is_active': row.is_active,
+                        'last_sync_date': row.last_sync_date.isoformat() if row.last_sync_date else None,
+                        'close_price': float(row.close_price) if row.close_price is not None else None,
+                        'price_change_pct': float(row.price_change_pct) if row.price_change_pct is not None else None,
+                        'volume': int(row.volume) if row.volume is not None else None,
+                        'latest_trade_date': row.latest_trade_date.strftime('%Y-%m-%d') if row.latest_trade_date else None
+                    })
+                
+                # 获取总数（用于分页）
+                count_query = """
+                SELECT COUNT(*) 
+                FROM stock_info si
+                WHERE si.is_active = :is_active
+                """
+                count_params = {'is_active': is_active}
+                
+                if market_code:
+                    count_query += " AND si.market_code = :market_code"
+                    count_params['market_code'] = market_code
+                
+                total_count = session.execute(text(count_query), count_params).scalar()
+                
+                return {
+                    'success': True,
+                    'data': stock_list,
+                    'total': total_count,
+                    'count': len(stock_list)
+                }
+                
+        except Exception as e:
+            logger.error(f"列出股票错误: {e}")
+            return {
+                'success': False,
+                'data': [],
+                'total': 0,
+                'count': 0,
+                'error': str(e)
+            }
 

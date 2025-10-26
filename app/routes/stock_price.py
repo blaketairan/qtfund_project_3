@@ -127,7 +127,7 @@ def get_stock_info(symbol: str):
 
 @stock_price_bp.route('/list', methods=['GET'])
 def list_stocks():
-    """列出所有股票"""
+    """列出所有股票（包含最新价格信息）"""
     try:
         market_code = request.args.get('market_code')
         is_active = request.args.get('is_active', 'Y')
@@ -151,7 +151,8 @@ def list_stocks():
         from app.services.stock_data_service import StockDataService
         service = StockDataService()
         
-        result = service.list_all_stocks_from_db(
+        # 使用新方法获取包含价格数据的股票列表
+        result = service.list_stocks_with_latest_price(
             market_code=market_code,
             is_active=is_active,
             limit=limit,
