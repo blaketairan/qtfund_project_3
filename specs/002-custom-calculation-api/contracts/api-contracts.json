@@ -1,0 +1,171 @@
+{
+  "title": "Custom Calculation API Contracts",
+  "version": "1.0.0",
+  "date": "2025-01-27",
+  "description": "API contracts for Python script execution in backend Flask service",
+  
+  "endpoints": {
+    "POST /api/custom-calculations/execute": {
+      "description": "Execute Python script for custom column calculation",
+      "method": "POST",
+      "headers": {
+        "Content-Type": "application/json"
+      },
+      "body": {
+        "type": "object",
+        "required": ["script", "column_name", "stock_symbols"],
+        "properties": {
+          "script": {
+            "type": "string",
+            "description": "Python code to execute",
+            "example": "return row['close_price'] / row['volume']"
+          },
+          "column_name": {
+            "type": "string",
+            "description": "User-provided column name",
+            "maxLength": 100,
+            "example": "Price per Volume"
+          },
+          "stock_symbols": {
+            "type": "array",
+            "description": "Array of stock symbols to calculate for",
+            "items": {
+              "type": "string",
+              "pattern": "^[A-Z]{2}\\.\\d{6}$"
+            },
+            "minItems": 1,
+            "maxItems": 200,
+            "example": ["SH.600519", "SH.600036"]
+          }
+        }
+      },
+      "responses": {
+        "200": {
+          "description": "Success - Returns calculated results",
+          "body": {
+            "code": 200,
+            "data": {
+              "results": [
+                {
+                  "symbol": "string",
+                  "value": "number | null",
+                  "error": "string | null"
+                }
+              ]
+            }
+          },
+          "example": {
+            "code": 200,
+            "message": "success",
+            "data": {
+              "results": [
+                {
+                  "symbol": "SH.600519",
+                  "value": 1.234,
+                  "error": null
+                },
+                {
+                  "symbol": "SH.600036",
+                  "value": null,
+                  "error": "Division by zero"
+                }
+              ]
+            }
+          }
+        },
+        "400": {
+          "description": "Error - Invalid request or script execution failed",
+          "body": {
+            "code": 400,
+            "message": "string",
+            "detail": {
+              "error_type": "string",
+              "error_message": "string",
+              "line_number": "number (optional)"
+            },
+            "error": true
+          },
+          "examples": [
+            {
+              "code": 400,
+              "message": "Script execution failed",
+              "detail": {
+                "error_type": "SyntaxError",
+                "error_message": "invalid syntax",
+                "line_number": 3
+              },
+              "error": true
+            },
+            {
+              "code": 400,
+              "message": "Invalid stock symbol format",
+              "detail": {
+                "error_type": "ValidationError",
+                "error_message": "Symbol must match MARKET.CODE format"
+              },
+              "error": true
+            },
+            {
+              "code": 400,
+              "message": "Script execution timeout",
+              "detail": {
+                "error_type": "TimeoutError",
+                "error_message": "Script exceeded 10 second limit"
+              },
+              "error": true
+            }
+          ]
+        },
+        "500": {
+          "description": "Internal server error",
+          "body": {
+            "code": 500,
+            "message": "Internal server error",
+            "error": true
+          }
+        }
+      }
+    }
+  },
+  
+  "data_types": {
+    "CalculationResult": {
+      "symbol": "string",
+      "value": "number | null",
+      "error": "string | null"
+    },
+    "StockRowData": {
+      "description": "Dict passed to Python script as 'row' variable",
+      "symbol": "string",
+      "trade_date": "string",
+      "open_price": "number",
+      "high_price": "number",
+      "low_price": "number",
+      "close_price": "number",
+      "volume": "number",
+      "turnover": "number",
+      "price_change": "number",
+      "price_change_pct": "number",
+      "market_code": "string"
+    }
+  },
+  
+  "security_constraints": {
+    "blocked_operations": [
+      "import statements",
+      "file operations (open, read, write)",
+      "network operations",
+      "system calls (os.system, subprocess)",
+      "dangerous built-ins (eval, exec, __import__)"
+    ],
+    "allowed_operations": [
+      "mathematical operations",
+      "dict/list/string operations",
+      "math module functions",
+      "safe built-ins (len, range, zip, etc.)"
+    ],
+    "timeout": "10 seconds maximum execution time",
+    "sandbox": "RestrictedPython with safe globals"
+  }
+}
+
