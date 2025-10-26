@@ -210,11 +210,12 @@ def list_scripts():
         
         scripts = CustomScriptService.get_all()
         
-        script_list = [script.to_dict() for script in scripts]
+        # get_all() 已经返回字典列表，不需要再转换
+        # script_list = [script.to_dict() for script in scripts]  # 这行不再需要
         
         return create_success_response(
-            data=script_list,
-            message=f"查询到 {len(script_list)} 个脚本"
+            data=scripts,  # 直接返回字典列表
+            message=f"查询到 {len(scripts)} 个脚本"
         )
         
     except Exception as e:

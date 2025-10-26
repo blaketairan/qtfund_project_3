@@ -143,9 +143,24 @@ class CustomScriptService:
         from database.connection import db_manager
         
         with db_manager.get_session() as session:
-            return session.query(CustomScript).order_by(
+            scripts = session.query(CustomScript).order_by(
                 CustomScript.created_at.desc()
             ).all()
+            
+            # 在session关闭前转换为字典
+            result = []
+            for script in scripts:
+                script_dict = {
+                    'id': script.id,
+                    'name': script.name,
+                    'description': script.description,
+                    'code': script.code,
+                    'created_at': script.created_at.isoformat() if script.created_at else None,
+                    'updated_at': script.updated_at.isoformat() if script.updated_at else None
+                }
+                result.append(script_dict)
+            
+            return result
     
     @staticmethod
     def update(script_id: int, name: str = None, code: str = None, description: str = None) -> 'CustomScript':
