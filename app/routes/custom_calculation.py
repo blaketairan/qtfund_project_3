@@ -68,7 +68,11 @@ def execute_script():
                 return create_error_response(404, "未找到股票", "数据库中没有活跃股票")
             logger.info(f"自动获取 {len(stock_symbols)} 只活跃股票")
         
-        if len(stock_symbols) > 200:
+        # 限制：如果用户手动指定了超过200个股票，则拒绝
+        # 但如果是通过空数组自动获取的所有股票，则允许
+        user_specified_count = len(data.get('stock_symbols', []))
+        if user_specified_count > 200:
+            logger.warning(f"用户手动指定了超过200个股票: {user_specified_count}")
             return create_error_response(400, "参数错误", "stock_symbols最多支持200个")
         
         logger.info(f"执行自定义计算: column_name={column_name}, stocks={len(stock_symbols)}")
