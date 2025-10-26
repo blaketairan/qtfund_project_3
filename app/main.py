@@ -108,6 +108,13 @@ def init_app_context(app):
     except Exception as e:
         logger.error(f"❌ 股票清单加载错误: {e}")
     
+    # 自动运行数据库迁移（创建 custom_scripts 表）
+    try:
+        from database.migrations.run_migrations import create_custom_scripts_table
+        create_custom_scripts_table()
+    except Exception as e:
+        logger.warning(f"⚠️ 数据库迁移跳过: {e}")
+    
     logger.info("🚀 股票数据查询API应用初始化完成")
 
 
