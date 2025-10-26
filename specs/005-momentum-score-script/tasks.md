@@ -158,7 +158,7 @@ def get_history(symbol: str, days: int) -> list:
 **Commands**:
 ```bash
 # Test via API
-curl -X POST http://localhost:5000/api/custom-calculation/execute \
+curl -X POST http://localhost:8000/api/custom-calculation/execute \
   -d '{"script": "result = len(get_history(\"SH.600519\", 250))", "stock_symbols": ["SH.600519"], "column_name": "test"}'
 ```
 
@@ -171,7 +171,7 @@ curl -X POST http://localhost:5000/api/custom-calculation/execute \
 **Commands**:
 ```bash
 # Load and execute example script
-curl -X POST http://localhost:5000/api/custom-calculation/execute \
+curl -X POST http://localhost:8000/api/custom-calculation/execute \
   -d '{"script": "<script from script_example/momentum_score.py>", "stock_symbols": ["SH.600519", "SZ.000001"], "column_name": "momentum_score"}'
 ```
 
@@ -182,7 +182,7 @@ curl -X POST http://localhost:5000/api/custom-calculation/execute \
 
 **Commands**:
 ```bash
-curl http://localhost:5000/api/custom-calculation/functions
+curl http://localhost:8000/api/custom-calculation/functions
 ```
 
 ### P5-T018: Performance Testing

@@ -1,0 +1,91 @@
+{
+  "api_contracts": {
+    "custom_calculation_execute": {
+      "description": "Execute custom Python script for stock analysis calculations with historical data access",
+      "endpoint": "POST /api/custom-calculation/execute",
+      "request_parameters": {
+        "script": {
+          "type": "string",
+          "required": true,
+          "description": "Python script code to execute"
+        },
+        "stock_symbols": {
+          "type": "array",
+          "required": true,
+          "description": "Array of stock symbols to calculate values for",
+          "minItems": 1,
+          "maxItems": 200
+        },
+        "column_name": {
+          "type": "string",
+          "required": true,
+          "description": "Column name for the calculated result"
+        },
+        "script_id": {
+          "type": "integer",
+          "required": false,
+          "description": "ID of saved script to execute (alternative to providing script)"
+        }
+      },
+      "script_context_globals": {
+        "row": {
+          "type": "object",
+          "description": "Current stock data dictionary",
+          "properties": {
+            "symbol": {"type": "string"},
+            "close_price": {"type": "number"},
+            "volume": {"type": "integer"}
+          }
+        },
+        "get_history": {
+          "type": "function",
+          "signature": "get_history(symbol: str, days: int) -> list",
+          "description": "Retrieve historical price data for a stock",
+          "parameters": {
+            "symbol": "Stock symbol (e.g., 'SH.600519')",
+            "days": "Number of trading days to retrieve (max 1000)"
+          },
+          "returns": "List of dicts with keys: close_price, trade_date, volume, price_change_pct"
+        },
+        "math": {
+          "type": "module",
+          "description": "Python math module with basic functions"
+        },
+        "abs, min, max, sum, round, len, range, zip, enumerate, reversed, sorted": {
+          "type": "builtin",
+          "description": "Basic Python builtin functions"
+        }
+      },
+      "response_success": {
+        "code": 200,
+        "message": "执行成功",
+        "timestamp": "2025-01-27 10:30:45",
+        "data": {
+          "results": [
+            {
+              "symbol": "SH.600519",
+              "value": 0.1523,
+              "error": null
+            },
+            {
+              "symbol": "SZ.000001",
+              "value": null,
+              "error": "Insufficient data: requested 250, available 45"
+            }
+          ]
+        }
+      },
+      "response_error_400": {
+        "code": 400,
+        "message": "参数错误",
+        "error": "stock_symbols必须是非空数组"
+      },
+      "response_error_500": {
+        "code": 500,
+        "message": "执行失败",
+        "error": "Database connection error"
+      }
+    }
+  }
+}
+
