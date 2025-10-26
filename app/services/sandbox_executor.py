@@ -58,6 +58,10 @@ class SandboxExecutor:
         # 添加必要的内置函数（供脚本使用）
         safe['globals'] = lambda: safe  # Allow globals() access in scripts
         
+        # 添加字典访问支持（RestrictedPython 需要）
+        safe['_getitem_'] = lambda obj, key: obj[key]  # Support dict access
+        safe['_getiter_'] = lambda obj: iter(obj)  # Support iteration
+        
         # 添加历史数据访问函数
         safe['get_history'] = self._get_history_function
         
