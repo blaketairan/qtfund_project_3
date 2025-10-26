@@ -126,18 +126,31 @@ class SandboxExecutor:
                 exec_globals.update(context)
             
             # 编译脚本（使用RestrictedPython）
-            byte_code = compile_restricted(
+            compile_result = compile_restricted(
                 script_code,
                 filename='<inline-script>',
                 mode='exec'
             )
             
-            if byte_code.errors:
-                return None, self._format_compile_errors(byte_code.errors)
+            # 处理不同的返回值格式
+            # 新版本可能返回tuple: (code, errors, warnings)
+            # 旧版本返回对象，有.code和.errors属性
+            if isinstance(compile_result, tuple):
+                byte_code, errors, warnings = compile_result[:3] if len(compile_result) >= 3 else (compile_result, None, None)
+                if errors:
+                    return None, self._format_compile_errors(errors)
+            else:
+                # 旧版本API
+                byte_code = compile_result
+                if hasattr(byte_code, 'errors') and byte_code.errors:
+                    return None, self._format_compile_errors(byte_code.errors)
+                # 旧版本可能需要访问.code属性
+                if hasattr(byte_code, 'code'):
+                    byte_code = byte_code.code
             
             # 执行脚本
             try:
-                exec(byte_code.code, exec_globals)
+                exec(byte_code, exec_globals)
                 
                 # 尝试获取返回值
                 result = exec_globals.get('result', None)
@@ -191,16 +204,25 @@ class SandboxExecutor:
         try:
             logger.info(f"开始验证脚本语法，脚本长度={len(script_code)}")
             
-            byte_code = compile_restricted(
+            compile_result = compile_restricted(
                 script_code,
                 filename='<inline-script>',
                 mode='exec'
             )
             
-            if byte_code.errors:
-                error_msg = self._format_compile_errors(byte_code.errors)
-                logger.error(f"语法验证失败: {error_msg}")
-                return False, error_msg
+            # 处理不同的返回值格式
+            if isinstance(compile_result, tuple):
+                code, errors, warnings = compile_result[:3] if len(compile_result) >= 3 else (compile_result, None, None)
+                if errors:
+                    error_msg = self._format_compile_errors(errors)
+                    logger.error(f"语法验证失败: {error_msg}")
+                    return False, error_msg
+            else:
+                # 旧版本API
+                if hasattr(compile_result, 'errors') and compile_result.errors:
+                    error_msg = self._format_compile_errors(compile_result.errors)
+                    logger.error(f"语法验证失败: {error_msg}")
+                    return False, error_msg
             
             logger.info("语法验证通过")
             return True, None
