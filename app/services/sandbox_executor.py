@@ -143,13 +143,13 @@ class SandboxExecutor:
                 
                 # 尝试获取返回值
                 result = exec_globals.get('result', None)
-                if result is None:
-                    return None, "Script must set 'result' variable with return value"
                 
-                # 验证返回类型
-                if not isinstance(result, (int, float, bool)):
-                    return None, f"Return value must be a number or bool, got {type(result).__name__}"
+                # 允许 result 为 None（表示数据不足等情况）
+                # 如果 result 有值，验证类型
+                if result is not None and not isinstance(result, (int, float, bool, type(None))):
+                    return None, f"Return value must be a number, bool, or None, got {type(result).__name__}"
                 
+                # 返回 result（可能是 None）和 None 错误
                 return result, None
                 
             except Exception as e:
@@ -191,6 +191,8 @@ class SandboxExecutor:
             Tuple[is_valid, error_message]
         """
         try:
+            logger.info(f"开始验证脚本语法，脚本长度={len(script_code)}")
+            
             byte_code = compile_restricted(
                 script_code,
                 filename='<inline-script>',
@@ -198,10 +200,14 @@ class SandboxExecutor:
             )
             
             if byte_code.errors:
-                return False, self._format_compile_errors(byte_code.errors)
+                error_msg = self._format_compile_errors(byte_code.errors)
+                logger.error(f"语法验证失败: {error_msg}")
+                return False, error_msg
             
+            logger.info("语法验证通过")
             return True, None
             
         except Exception as e:
+            logger.error(f"语法验证异常: {e}")
             return False, f"Syntax validation failed: {str(e)}"
 
