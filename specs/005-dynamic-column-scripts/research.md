@@ -111,11 +111,10 @@
    - After querying stocks, load scripts and execute them
    - Append results to each stock record
 
-2. **Performance Considerations**:
-   - Script execution is CPU-bound but lightweight
+2. **Implementation Considerations**:
+   - Script execution is CPU-bound
    - Main bottleneck: database query for script loading (once per request)
-   - Each script execution: ~5-10ms for simple calculations
-   - Estimate: 200 stocks × 3 scripts × 10ms = 6s worst case
+   - Script execution time depends on complexity
 
 **Optimization Strategy**:
 - Load all scripts once at request start (minimize DB queries)

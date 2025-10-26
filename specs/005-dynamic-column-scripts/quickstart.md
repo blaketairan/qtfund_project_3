@@ -222,7 +222,6 @@ curl "http://localhost:8000/api/stock-price/list?limit=200&script_ids=[1,2,3]"
 
 **Note**: Response time depends on script complexity and database load. Simple calculations typically complete quickly.
 
-
 ---
 
 ## Rollback Plan
