@@ -177,6 +177,39 @@ GET /api/stock-info/local?keyword=茅台                      # 搜索"茅台"
 GET /api/stock-info/statistics
 ```
 
+### 自定义计算API (新增)
+
+```bash
+# 执行自定义Python脚本
+POST /api/custom-calculations/execute
+{
+    "script": "result = row['close_price'] / row['volume']",
+    "column_name": "价格/成交量",
+    "stock_symbols": ["SH.600519", "SH.600036"],
+    "script_id": 1  # 可选：使用保存的脚本
+}
+
+# 保存脚本
+POST /api/custom-calculations/scripts
+{
+    "name": "价格成交量比",
+    "code": "result = row['close_price'] / row['volume']",
+    "description": "计算每股价格与成交量的比值"
+}
+
+# 获取所有保存的脚本
+GET /api/custom-calculations/scripts
+
+# 获取特定脚本
+GET /api/custom-calculations/scripts/{id}
+
+# 更新脚本
+PUT /api/custom-calculations/scripts/{id}
+
+# 删除脚本
+DELETE /api/custom-calculations/scripts/{id}
+```
+
 ## 项目结构
 
 ```
