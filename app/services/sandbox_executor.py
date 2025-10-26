@@ -58,10 +58,14 @@ class SandboxExecutor:
         # 添加必要的内置函数（供脚本使用）
         safe['globals'] = lambda: safe  # Allow globals() access in scripts
         
-        # 添加字典访问支持（RestrictedPython 需要）
-        safe['_getitem_'] = lambda obj, key: obj[key]  # Support dict access
+        # 添加 RestrictedPython 必需的内置函数
+        # https://restrictedpython.readthedocs.io/en/latest/policies.html
+        safe['_getitem_'] = lambda obj, key: obj[key]  # Support dict/list access
         safe['_getiter_'] = lambda obj: iter(obj)  # Support iteration
         safe['_unpack_sequence_'] = lambda obj: obj  # Support tuple unpacking (e.g., a, b = func())
+        safe['_write_'] = lambda obj: obj  # Support write operations in comprehensions
+        safe['_inplacevar_'] = lambda op, obj, arg, val: obj  # Support in-place operations
+        safe['print_'] = print  # Support print statement (RestrictedPython style)
         
         # 添加历史数据访问函数
         safe['get_history'] = self._get_history_function
