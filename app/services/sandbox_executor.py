@@ -10,8 +10,6 @@ import signal
 import logging
 from typing import Any, Dict, Optional, Tuple
 from RestrictedPython import compile_restricted, safe_globals
-from RestrictedPython.transformer import RestrictingNodeTransformer
-from RestrictedPython._compat import IS_PY38_OR_GREATER
 
 logger = logging.getLogger(__name__)
 
