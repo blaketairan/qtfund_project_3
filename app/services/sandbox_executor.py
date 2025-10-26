@@ -61,6 +61,7 @@ class SandboxExecutor:
         # 添加字典访问支持（RestrictedPython 需要）
         safe['_getitem_'] = lambda obj, key: obj[key]  # Support dict access
         safe['_getiter_'] = lambda obj: iter(obj)  # Support iteration
+        safe['_unpack_sequence_'] = lambda obj: obj  # Support tuple unpacking (e.g., a, b = func())
         
         # 添加历史数据访问函数
         safe['get_history'] = self._get_history_function
