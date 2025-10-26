@@ -43,19 +43,21 @@ def execute_script():
         
         # 验证参数
         if not script:
-            logger.error(f"参数验证失败: script为空, script_id={script_id}")
-            return create_error_response(400, "参数错误", "script或script_id不能为空")
+            error_msg = f"script或script_id不能为空（缺少Python脚本代码）"
+            logger.error(f"参数验证失败: {error_msg}, script_id={script_id}")
+            return create_error_response(400, "参数错误", error_msg)
         
         if not column_name:
-            logger.error(f"参数验证失败: column_name为空")
-            return create_error_response(400, "参数错误", "column_name不能为空")
+            error_msg = "column_name不能为空（缺少列名）"
+            logger.error(f"参数验证失败: {error_msg}")
+            return create_error_response(400, "参数错误", error_msg)
         
         if stock_symbols is None:
             stock_symbols = []
         
         if not isinstance(stock_symbols, list):
             logger.error(f"参数验证失败: stock_symbols不是数组, 类型={type(stock_symbols)}, 值={stock_symbols}")
-            return create_error_response(400, "参数错误", f"stock_symbols必须是数组，当前类型: {type(stock_symbols)}")
+            return create_error_response(400, "参数错误", f"stock_symbols必须是数组类型，当前是 {type(stock_symbols).__name__}")
         
         # 处理空数组情况：获取所有活跃股票
         if len(stock_symbols) == 0:
@@ -68,14 +70,14 @@ def execute_script():
                 return create_error_response(404, "未找到股票", "数据库中没有活跃股票")
             logger.info(f"自动获取 {len(stock_symbols)} 只活跃股票")
         
-        # 限制：如果用户手动指定了超过200个股票，则拒绝
-        # 但如果是通过空数组自动获取的所有股票，则允许
+        # 限制：只对用户手动指定的股票进行200个限制
+        # 自动获取的所有股票不受此限制
         user_specified_count = len(data.get('stock_symbols', []))
         if user_specified_count > 200:
-            logger.warning(f"用户手动指定了超过200个股票: {user_specified_count}")
-            return create_error_response(400, "参数错误", "stock_symbols最多支持200个")
+            logger.error(f"用户手动指定了超过200个股票: {user_specified_count}")
+            return create_error_response(400, "参数错误", f"stock_symbols最多支持200个，当前指定了 {user_specified_count} 个")
         
-        logger.info(f"执行自定义计算: column_name={column_name}, stocks={len(stock_symbols)}")
+        logger.info(f"准备执行计算: column_name={column_name}, 处理股票数量={len(stock_symbols)}")
         
         # 调试日志：记录参数信息
         logger.info(f"DEBUG: script长度={len(script)}, column_name={column_name}, stock_symbols数量={len(stock_symbols)}")
