@@ -8,6 +8,7 @@ from flask import Blueprint, request
 from app.utils.responses import (
     create_stock_data_response, 
     create_error_response,
+    create_success_response,
     format_stock_price_data,
     validate_date_range,
     validate_symbol_format
