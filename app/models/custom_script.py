@@ -95,7 +95,24 @@ class CustomScriptService:
             session.add(script)
             session.commit()
             session.refresh(script)
-            return script
+            
+            # 在session关闭前获取需要的数据
+            script_id = script.id
+            script_name = script.name
+            script_code = script.code
+            script_description = script.description
+            script_created_at = script.created_at
+            script_updated_at = script.updated_at
+        
+        # 在session外创建新对象返回
+        result = CustomScript()
+        result.id = script_id
+        result.name = script_name
+        result.code = script_code
+        result.description = script_description
+        result.created_at = script_created_at
+        result.updated_at = script_updated_at
+        return result
     
     @staticmethod
     def get_by_id(script_id: int) -> 'CustomScript':
@@ -164,7 +181,24 @@ class CustomScriptService:
             script.updated_at = get_china_time()
             session.commit()
             session.refresh(script)
-            return script
+            
+            # 在session关闭前获取需要的数据
+            script_id = script.id
+            script_name = script.name
+            script_code = script.code
+            script_description = script.description
+            script_created_at = script.created_at
+            script_updated_at = script.updated_at
+        
+        # 在session外创建新对象返回
+        result = CustomScript()
+        result.id = script_id
+        result.name = script_name
+        result.code = script_code
+        result.description = script_description
+        result.created_at = script_created_at
+        result.updated_at = script_updated_at
+        return result
     
     @staticmethod
     def delete(script_id: int) -> bool:
