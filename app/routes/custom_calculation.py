@@ -65,6 +65,9 @@ def execute_script():
         
         logger.info(f"执行自定义计算: column_name={column_name}, stocks={len(stock_symbols)}")
         
+        # 调试日志：记录参数信息
+        logger.info(f"DEBUG: script长度={len(script)}, column_name={column_name}, stock_symbols数量={len(stock_symbols)}")
+        
         # 导入服务
         from app.services.sandbox_executor import SandboxExecutor
         executor = SandboxExecutor()
@@ -72,10 +75,12 @@ def execute_script():
         # 验证脚本语法
         is_valid, syntax_error = executor.validate_syntax(script)
         if not is_valid:
+            logger.error(f"脚本语法验证失败: {syntax_error}")
+            logger.error(f"问题脚本的前100个字符: {script[:100] if script else 'empty'}")
             return create_error_response(
                 400,
                 "脚本语法错误",
-                syntax_error
+                f"Script validation failed: {syntax_error}"
             )
         
         # 获取股票数据（TODO: 从数据库获取）

@@ -57,6 +57,9 @@ class SandboxExecutor:
         safe['float'] = float
         safe['bool'] = bool
         
+        # 添加必要的内置函数（供脚本使用）
+        safe['globals'] = lambda: safe  # Allow globals() access in scripts
+        
         # 添加历史数据访问函数
         safe['get_history'] = self._get_history_function
         
