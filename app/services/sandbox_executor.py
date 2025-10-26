@@ -66,7 +66,7 @@ class SandboxExecutor:
         def _getiter(obj):
             return iter(obj)
         
-        def _unpack_sequence(sequence):
+        def _unpack_sequence(sequence, count, context):
             return sequence
         
         def _iter_unpack_sequence(sequence, count, context):
