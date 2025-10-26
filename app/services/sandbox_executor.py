@@ -63,6 +63,7 @@ class SandboxExecutor:
         safe['_getitem_'] = lambda obj, key: obj[key]  # Support dict/list access
         safe['_getiter_'] = lambda obj: iter(obj)  # Support iteration
         safe['_unpack_sequence_'] = lambda obj: obj  # Support tuple unpacking (e.g., a, b = func())
+        safe['_iter_unpack_sequence_'] = lambda obj: obj  # Support tuple unpacking in for loop (e.g., for a, b in iter())
         safe['_write_'] = lambda obj: obj  # Support write operations in comprehensions
         safe['_inplacevar_'] = lambda op, obj, arg, val: obj  # Support in-place operations
         safe['print_'] = print  # Support print statement (RestrictedPython style)
