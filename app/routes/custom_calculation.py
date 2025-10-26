@@ -23,12 +23,22 @@ def execute_script():
         data = request.get_json() or {}
         
         script = data.get('script', '')
+        script_id = data.get('script_id')
         column_name = data.get('column_name', '')
         stock_symbols = data.get('stock_symbols', [])
         
+        # 如果提供了script_id，从数据库加载脚本
+        if script_id:
+            from app.models.custom_script import CustomScriptService
+            saved_script = CustomScriptService.get_by_id(script_id)
+            if not saved_script:
+                return create_error_response(404, "未找到脚本", f"脚本ID {script_id} 不存在")
+            script = saved_script.code
+            logger.info(f"加载保存的脚本: ID={script_id}, name={saved_script.name}")
+        
         # 验证参数
         if not script:
-            return create_error_response(400, "参数错误", "script不能为空")
+            return create_error_response(400, "参数错误", "script或script_id不能为空")
         
         if not column_name:
             return create_error_response(400, "参数错误", "column_name不能为空")
@@ -94,6 +104,143 @@ def execute_script():
     except Exception as e:
         logger.error(f"执行自定义计算失败: {e}")
         return create_error_response(500, "执行失败", str(e))
+
+
+# ==================== Script Management Endpoints ====================
+
+
+@custom_calculation_bp.route('/scripts', methods=['POST'])
+def create_script():
+    """创建新脚本"""
+    try:
+        data = request.get_json() or {}
+        
+        name = data.get('name', '').strip()
+        code = data.get('code', '').strip()
+        description = data.get('description', '').strip()
+        
+        # 验证参数
+        if not name:
+            return create_error_response(400, "参数错误", "name不能为空")
+        
+        if not code:
+            return create_error_response(400, "参数错误", "code不能为空")
+        
+        # 验证脚本语法
+        from app.services.sandbox_executor import SandboxExecutor
+        executor = SandboxExecutor()
+        is_valid, syntax_error = executor.validate_syntax(code)
+        if not is_valid:
+            return create_error_response(400, "脚本语法错误", syntax_error)
+        
+        # 保存脚本
+        from app.models.custom_script import CustomScriptService
+        script = CustomScriptService.save(name, code, description)
+        
+        return create_success_response(
+            data=script.to_dict(),
+            message="脚本创建成功"
+        )
+        
+    except Exception as e:
+        logger.error(f"创建脚本失败: {e}")
+        return create_error_response(500, "创建失败", str(e))
+
+
+@custom_calculation_bp.route('/scripts', methods=['GET'])
+def list_scripts():
+    """获取所有脚本列表"""
+    try:
+        from app.models.custom_script import CustomScriptService
+        
+        scripts = CustomScriptService.get_all()
+        
+        script_list = [script.to_dict() for script in scripts]
+        
+        return create_success_response(
+            data=script_list,
+            message=f"查询到 {len(script_list)} 个脚本"
+        )
+        
+    except Exception as e:
+        logger.error(f"获取脚本列表失败: {e}")
+        return create_error_response(500, "查询失败", str(e))
+
+
+@custom_calculation_bp.route('/scripts/<int:script_id>', methods=['GET'])
+def get_script(script_id: int):
+    """获取特定脚本"""
+    try:
+        from app.models.custom_script import CustomScriptService
+        
+        script = CustomScriptService.get_by_id(script_id)
+        
+        if not script:
+            return create_error_response(404, "未找到脚本", f"脚本ID {script_id} 不存在")
+        
+        return create_success_response(
+            data=script.to_dict(),
+            message="查询成功"
+        )
+        
+    except Exception as e:
+        logger.error(f"获取脚本失败: {e}")
+        return create_error_response(500, "查询失败", str(e))
+
+
+@custom_calculation_bp.route('/scripts/<int:script_id>', methods=['PUT'])
+def update_script(script_id: int):
+    """更新脚本"""
+    try:
+        data = request.get_json() or {}
+        
+        name = data.get('name', '').strip() or None
+        code = data.get('code', '').strip() or None
+        description = data.get('description', '').strip() or None
+        
+        # 如果更新代码，验证语法
+        if code:
+            from app.services.sandbox_executor import SandboxExecutor
+            executor = SandboxExecutor()
+            is_valid, syntax_error = executor.validate_syntax(code)
+            if not is_valid:
+                return create_error_response(400, "脚本语法错误", syntax_error)
+        
+        from app.models.custom_script import CustomScriptService
+        script = CustomScriptService.update(script_id, name, code, description)
+        
+        if not script:
+            return create_error_response(404, "未找到脚本", f"脚本ID {script_id} 不存在")
+        
+        return create_success_response(
+            data=script.to_dict(),
+            message="更新成功"
+        )
+        
+    except Exception as e:
+        logger.error(f"更新脚本失败: {e}")
+        return create_error_response(500, "更新失败", str(e))
+
+
+@custom_calculation_bp.route('/scripts/<int:script_id>', methods=['DELETE'])
+def delete_script(script_id: int):
+    """删除脚本"""
+    try:
+        from app.models.custom_script import CustomScriptService
+        
+        success = CustomScriptService.delete(script_id)
+        
+        if not success:
+            return create_error_response(404, "未找到脚本", f"脚本ID {script_id} 不存在")
+        
+        return create_success_response(
+            data=None,
+            message="删除成功"
+        )
+        
+    except Exception as e:
+        logger.error(f"删除脚本失败: {e}")
+        return create_error_response(500, "删除失败", str(e))
 
 
 def _get_stock_data(symbol: str) -> Optional[Dict[str, Any]]:

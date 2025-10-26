@@ -95,17 +95,17 @@
 
 ### Implementation for User Story 3
 
-- [ ] T025 [US3] Create custom_scripts table migration in database/migrations/create_custom_scripts_table.sql
-- [ ] T026 [US3] Create CustomScript model in app/models/custom_script.py
-- [ ] T027 [US3] Implement CRUD service methods (save, retrieve, update, delete) in app/models/custom_script.py
-- [ ] T028 [US3] Add validation for script code syntax in app/models/custom_script.py
-- [ ] T029 [US3] Implement POST /api/custom-calculations/scripts endpoint in app/routes/custom_calculation.py
-- [ ] T030 [US3] Implement GET /api/custom-calculations/scripts (list all) endpoint in app/routes/custom_calculation.py
-- [ ] T031 [US3] Implement GET /api/custom-calculations/scripts/{id} endpoint in app/routes/custom_calculation.py
-- [ ] T032 [US3] Implement PUT /api/custom-calculations/scripts/{id} endpoint in app/routes/custom_calculation.py
-- [ ] T033 [US3] Implement DELETE /api/custom-calculations/scripts/{id} endpoint in app/routes/custom_calculation.py
-- [ ] T034 [US3] Update POST /api/custom-calculations/execute to accept script_id parameter in app/routes/custom_calculation.py
-- [ ] T035 [US3] Implement script loading from database when script_id provided in app/routes/custom_calculation.py
+- [X] T025 [US3] Create custom_scripts table migration in database/migrations/create_custom_scripts_table.sql
+- [X] T026 [US3] Create CustomScript model in app/models/custom_script.py
+- [X] T027 [US3] Implement CRUD service methods (save, retrieve, update, delete) in app/models/custom_script.py
+- [X] T028 [US3] Add validation for script code syntax in app/models/custom_script.py
+- [X] T029 [US3] Implement POST /api/custom-calculations/scripts endpoint in app/routes/custom_calculation.py
+- [X] T030 [US3] Implement GET /api/custom-calculations/scripts (list all) endpoint in app/routes/custom_calculation.py
+- [X] T031 [US3] Implement GET /api/custom-calculations/scripts/{id} endpoint in app/routes/custom_calculation.py
+- [X] T032 [US3] Implement PUT /api/custom-calculations/scripts/{id} endpoint in app/routes/custom_calculation.py
+- [X] T033 [US3] Implement DELETE /api/custom-calculations/scripts/{id} endpoint in app/routes/custom_calculation.py
+- [X] T034 [US3] Update POST /api/custom-calculations/execute to accept script_id parameter in app/routes/custom_calculation.py
+- [X] T035 [US3] Implement script loading from database when script_id provided in app/routes/custom_calculation.py
 
 **Checkpoint**: At this point, User Stories 1, 2, AND 3 should all work independently
 
