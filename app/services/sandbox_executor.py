@@ -10,6 +10,7 @@ import signal
 import logging
 from typing import Any, Dict, Optional, Tuple
 from RestrictedPython import compile_restricted, safe_globals
+from RestrictedPython.Guards import guarded_iter_unpack, guarded_unpack
 
 logger = logging.getLogger(__name__)
 
@@ -66,24 +67,16 @@ class SandboxExecutor:
         def _getiter(obj):
             return iter(obj)
         
-        def _unpack_sequence(sequence, count, context):
-            return sequence
-        
-        def _iter_unpack_sequence(sequence, count, context):
-            return sequence
-        
         def _write(obj):
             return obj
         
-        def _inplacevar(op, x, y):
-            return op(x, y)
-        
+        # Use RestrictedPython's official guards for unpacking
         safe['_getitem_'] = _getitem  # Support dict/list access
         safe['_getiter_'] = _getiter  # Support iteration
-        safe['_unpack_sequence_'] = _unpack_sequence  # Support tuple unpacking (e.g., a, b = func())
-        safe['_iter_unpack_sequence_'] = _iter_unpack_sequence  # Support tuple unpacking in for loop
+        safe['_iter_unpack_sequence_'] = guarded_iter_unpack  # Use official guarded unpack
+        safe['_unpack_sequence_'] = guarded_unpack  # Use official guarded unpack
         safe['_write_'] = _write  # Support write operations in comprehensions
-        safe['_inplacevar_'] = _inplacevar  # Support in-place operations
+        safe['_inplacevar_'] = lambda op, x, y: op(x, y)  # Support in-place operations
         safe['print_'] = print  # Support print statement (RestrictedPython style)
         
         # 添加历史数据访问函数
