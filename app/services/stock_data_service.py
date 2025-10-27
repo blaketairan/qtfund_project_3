@@ -193,6 +193,7 @@ class StockDataService:
     def list_stocks_with_latest_price(self,
                                       market_code: Optional[str] = None,
                                       is_active: str = 'Y',
+                                      is_etf: Optional[bool] = None,
                                       limit: int = 100,
                                       offset: int = 0) -> Dict[str, Any]:
         """
@@ -203,6 +204,7 @@ class StockDataService:
         Args:
             market_code: 市场代码过滤（SH/SZ/BJ）
             is_active: 是否活跃（Y/N）
+            is_etf: ETF筛选（True-仅ETF, False-仅股票, None-全部）
             limit: 返回数量限制
             offset: 分页偏移量
             
@@ -221,6 +223,7 @@ class StockDataService:
                     si.stock_name,
                     si.market_code,
                     si.is_active,
+                    si.is_etf,
                     si.last_sync_date,
                     lp.close_price,
                     lp.volume,
@@ -252,6 +255,13 @@ class StockDataService:
                 if market_code:
                     query += " AND si.market_code = :market_code"
                 
+                # 添加ETF过滤
+                if is_etf is not None:
+                    if is_etf:
+                        query += " AND si.is_etf = 'Y'"
+                    else:
+                        query += " AND si.is_etf = 'N'"
+                
                 # 添加排序和分页
                 query += " ORDER BY si.symbol LIMIT :limit OFFSET :offset"
                 
@@ -267,6 +277,7 @@ class StockDataService:
                         'stock_name': row.stock_name,
                         'market_code': row.market_code,
                         'is_active': row.is_active,
+                        'is_etf': row.is_etf == 'Y',  # Convert CHAR to boolean
                         'last_sync_date': row.last_sync_date.isoformat() if row.last_sync_date else None,
                         'close_price': float(row.close_price) if row.close_price is not None else None,
                         'price_change_pct': float(row.price_change_pct) if row.price_change_pct is not None else None,
@@ -285,6 +296,12 @@ class StockDataService:
                 if market_code:
                     count_query += " AND si.market_code = :market_code"
                     count_params['market_code'] = market_code
+                
+                if is_etf is not None:
+                    if is_etf:
+                        count_query += " AND si.is_etf = 'Y'"
+                    else:
+                        count_query += " AND si.is_etf = 'N'"
                 
                 total_count = session.execute(text(count_query), count_params).scalar()
                 

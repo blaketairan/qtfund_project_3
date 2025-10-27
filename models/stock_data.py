@@ -140,6 +140,7 @@ class StockInfo(Base):
     
     # 状态
     is_active = Column(String(1), default='Y', nullable=False, comment='是否活跃（Y/N）')
+    is_etf = Column(String(1), default='N', nullable=False, comment='是否ETF（Y/N）')
     
     # 同步进度跟踪
     last_sync_date = Column(DateTime, nullable=True, comment='最后同步的行情日期')
@@ -154,6 +155,8 @@ class StockInfo(Base):
         Index('idx_market_code_info', 'market_code'),
         Index('idx_stock_name_info', 'stock_name'),
         Index('idx_is_active', 'is_active'),
+        Index('idx_symbol_etf', 'symbol', 'is_etf'),
+        Index('idx_is_etf_active', 'is_etf', 'is_active'),
         {'comment': '股票基础信息表'}
     )
     

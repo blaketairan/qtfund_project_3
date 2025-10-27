@@ -134,6 +134,14 @@ def list_stocks():
         limit = request.args.get('limit', 100, type=int)
         offset = request.args.get('offset', 0, type=int)
         
+        # 解析 is_etf 参数
+        is_etf_param = request.args.get('is_etf')
+        is_etf = None
+        if is_etf_param is not None:
+            if is_etf_param.lower() not in ('true', 'false'):
+                return create_error_response(400, "参数错误", "is_etf must be 'true' or 'false'")
+            is_etf = is_etf_param.lower() == 'true'
+        
         # 限制最大查询数量，防止性能问题
         if limit > 10000:
             return create_error_response(
@@ -155,6 +163,7 @@ def list_stocks():
         result = service.list_stocks_with_latest_price(
             market_code=market_code,
             is_active=is_active,
+            is_etf=is_etf,
             limit=limit,
             offset=offset
         )
