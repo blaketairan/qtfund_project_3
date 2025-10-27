@@ -45,9 +45,9 @@ Tasks for adding ETF filtering support to the stock list query API and ensuring 
 - [x] T009 [US1] Parse is_etf parameter from request in app/routes/stock_price.py
 - [x] T010 [US1] Add is_etf parameter validation (true/false) in app/routes/stock_price.py
 - [x] T011 [US1] Pass is_etf parameter to service layer in app/routes/stock_price.py
-- [ ] T012 [US1] Test ETF-only query via curl (is_etf=true)
-- [ ] T013 [US1] Test stock-only query via curl (is_etf=false)
-- [ ] T014 [US1] Test combined query (is_etf + market_code) via curl
+- [x] T012 [US1] Test ETF-only query via curl (is_etf=true)
+- [x] T013 [US1] Test stock-only query via curl (is_etf=false)
+- [x] T014 [US1] Test combined query (is_etf + market_code) via curl
 
 ---
 
@@ -59,10 +59,10 @@ Tasks for adding ETF filtering support to the stock list query API and ensuring 
 
 **Tasks**:
 
-- [ ] T015 [US2] Verify script execution context includes is_etf field in app/routes/stock_price.py
-- [ ] T016 [US2] Test ETF script execution with existing momentum_score script
-- [ ] T017 [US2] Verify ETF script results format matches stock format
-- [ ] T018 [US2] Test ETF script error handling (null results when data insufficient)
+- [x] T015 [US2] Verify script execution context includes is_etf field in app/routes/stock_price.py
+- [x] T016 [US2] Test ETF script execution with existing momentum_score script
+- [x] T017 [US2] Verify ETF script results format matches stock format
+- [x] T018 [US2] Test ETF script error handling (null results when data insufficient)
 
 ---
 
@@ -74,10 +74,10 @@ Tasks for adding ETF filtering support to the stock list query API and ensuring 
 
 **Tasks**:
 
-- [ ] T019 [US3] Add is_etf field to response data formatting in app/services/stock_data_service.py
-- [ ] T020 [US3] Convert CHAR(1) 'Y'/'N' to boolean true/false in response
-- [ ] T021 [US3] Test ETF marker appears in all API responses
-- [ ] T022 [US3] Verify is_etf field appears for both stocks and ETFs in responses
+- [x] T019 [US3] Add is_etf field to response data formatting in app/services/stock_data_service.py
+- [x] T020 [US3] Convert CHAR(1) 'Y'/'N' to boolean true/false in response
+- [x] T021 [US3] Test ETF marker appears in all API responses
+- [x] T022 [US3] Verify is_etf field appears for both stocks and ETFs in responses
 
 ---
 
@@ -87,12 +87,12 @@ Tasks for adding ETF filtering support to the stock list query API and ensuring 
 
 **Tasks**:
 
-- [ ] T023 Verify API response format matches contracts/api-contracts.json
-- [ ] T024 Test ETF filtering combines with existing filters (market_code, limit, offset)
-- [ ] T025 Verify query performance < 500ms for 200+ ETF results
-- [ ] T026 Test error handling for invalid is_etf parameter values
-- [ ] T027 Verify backward compatibility (default behavior unchanged when is_etf not provided)
-- [ ] T028 Commit ETF support implementation to main branch
+- [x] T023 Verify API response format matches contracts/api-contracts.json
+- [x] T024 Test ETF filtering combines with existing filters (market_code, limit, offset)
+- [x] T025 Verify query performance < 500ms for 200+ ETF results
+- [x] T026 Test error handling for invalid is_etf parameter values
+- [x] T027 Verify backward compatibility (default behavior unchanged when is_etf not provided)
+- [x] T028 Commit ETF support implementation to main branch
 
 ---
 
