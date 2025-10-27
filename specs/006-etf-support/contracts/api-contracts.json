@@ -1,0 +1,161 @@
+{
+  "api_contracts": {
+    "list_stocks_with_etf_filter": {
+      "description": "Returns list of stocks/ETFs with optional instrument type filtering",
+      "endpoint": "GET /api/stock-price/list",
+      "query_parameters": {
+        "market_code": {
+          "type": "string",
+          "required": false,
+          "description": "Filter by market code (SH/SZ/BJ)",
+          "enum": ["SH", "SZ", "BJ"]
+        },
+        "is_active": {
+          "type": "string",
+          "required": false,
+          "default": "Y",
+          "description": "Filter by active status (Y/N)",
+          "enum": ["Y", "N"]
+        },
+        "is_etf": {
+          "type": "boolean",
+          "required": false,
+          "description": "Filter by instrument type - true for ETFs only, false for stocks only, omitted for both",
+          "example": true
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "default": 100,
+          "max": 10000,
+          "description": "Maximum number of records to return"
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "default": 0,
+          "description": "Number of records to skip for pagination"
+        },
+        "script_ids": {
+          "type": "array[integer]",
+          "required": false,
+          "description": "Array of script IDs to calculate",
+          "example": [1, 2, 3]
+        }
+      },
+      "response_success": {
+        "code": 200,
+        "message": "查询到 2 只ETF",
+        "data": [
+          {
+            "symbol": "SH.510300",
+            "stock_name": "沪深300ETF",
+            "market_code": "SH",
+            "is_active": "Y",
+            "is_etf": true,
+            "close_price": 4.852,
+            "price_change_pct": 0.65,
+            "volume": 52000000,
+            "latest_trade_date": "2025-01-27",
+            "script_results": {
+              "1": 0.093
+            }
+          },
+          {
+            "symbol": "SZ.159919",
+            "stock_name": "300ETF",
+            "market_code": "SZ",
+            "is_active": "Y",
+            "is_etf": true,
+            "close_price": 3.456,
+            "price_change_pct": 0.23,
+            "volume": 12300000,
+            "latest_trade_date": "2025-01-27",
+            "script_results": {
+              "1": 0.281
+            }
+          }
+        ],
+        "total": 350,
+        "count": 2
+      },
+      "response_fields": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Instrument symbol with market prefix"
+        },
+        "stock_name": {
+          "type": "string",
+          "required": true,
+          "description": "Instrument name"
+        },
+        "market_code": {
+          "type": "string",
+          "required": true,
+          "description": "Market code (SH/SZ/BJ)"
+        },
+        "is_active": {
+          "type": "string",
+          "required": true,
+          "description": "Active status (Y/N)"
+        },
+        "is_etf": {
+          "type": "boolean",
+          "required": true,
+          "description": "Whether the instrument is an ETF (true for ETFs, false for regular stocks)"
+        },
+        "close_price": {
+          "type": "number",
+          "required": false,
+          "nullable": true,
+          "description": "Latest closing price"
+        },
+        "price_change_pct": {
+          "type": "number",
+          "required": false,
+          "nullable": true,
+          "description": "Price change percentage"
+        },
+        "volume": {
+          "type": "integer",
+          "required": false,
+          "nullable": true,
+          "description": "Trading volume"
+        },
+        "latest_trade_date": {
+          "type": "string",
+          "format": "YYYY-MM-DD",
+          "required": false,
+          "nullable": true,
+          "description": "Latest trading date"
+        },
+        "script_results": {
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "description": "Calculated script results (optional, same as existing contract)"
+        }
+      },
+      "response_constraints": {
+        "is_etf_field": "Always included in response to indicate instrument type",
+        "etf_filter": "When is_etf=true is provided, only returns ETFs. When is_etf=false is provided, only returns stocks. When omitted, returns both.",
+        "combining_filters": "is_etf filter can be combined with market_code, is_active, limit, and offset filters",
+        "script_compatibility": "Script execution works identically for ETFs and stocks"
+      },
+      "error_responses": {
+        "400": {
+          "code": 400,
+          "message": "参数错误",
+          "error": "is_etf must be a boolean value"
+        },
+        "500": {
+          "code": 500,
+          "message": "查询失败",
+          "error": "Database or script execution error"
+        }
+      }
+    }
+  }
+}
+
