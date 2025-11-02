@@ -44,10 +44,19 @@ fi
 # 创建日志目录
 mkdir -p logs
 
-# 启动服务
-echo -e "${GREEN}📍 启动查询服务 (端口 8000)...${NC}"
-nohup python start_flask_app.py > logs/query_service.log 2>&1 &
-PID=$!
+# 启动服务（使用Gunicorn以支持长时间查询）
+echo -e "${GREEN}📍 启动查询服务 (端口 8000, 超时10分钟)...${NC}"
+
+# 检查是否安装Gunicorn
+if python -c "import gunicorn" 2>/dev/null; then
+    echo "   使用 Gunicorn 启动（支持长时间查询）"
+    nohup gunicorn -c config/gunicorn_config.py start_flask_app:app > logs/query_service.log 2>&1 &
+    PID=$!
+else
+    echo -e "${YELLOW}   Gunicorn未安装，使用开发服务器（不支持10分钟超时）${NC}"
+    nohup python start_flask_app.py > logs/query_service.log 2>&1 &
+    PID=$!
+fi
 
 # 保存PID到文件（使用不同的文件名避免冲突）
 echo $PID > logs/query_service.pid

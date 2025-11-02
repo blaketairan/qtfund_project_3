@@ -23,10 +23,10 @@ Tasks for removing default pagination limits, verifying market filtering is data
 
 ## Phase 1: Setup & Configuration
 
-- [ ] T001 [P] Create Gunicorn configuration file (config/gunicorn_config.py)
-- [ ] T002 [P] Add timeout constants to settings (config/settings.py)
-- [ ] T003 Update start script to use Gunicorn with timeout config (bin/start.sh)
-- [ ] T004 Verify Gunicorn package is installed (requirements.txt)
+- [x] T001 [P] Create Gunicorn configuration file (config/gunicorn_config.py)
+- [x] T002 [P] Add timeout constants to settings (config/settings.py)
+- [x] T003 Update start script to use Gunicorn with timeout config (bin/start.sh)
+- [x] T004 Verify Gunicorn package is installed (requirements.txt)
 
 ---
 
@@ -38,12 +38,12 @@ Tasks for removing default pagination limits, verifying market filtering is data
 
 **Tasks**:
 
-- [ ] T005 [US1] Remove default value from limit parameter in app/routes/stock_price.py
-- [ ] T006 [US1] Update limit validation to allow None in app/routes/stock_price.py
-- [ ] T007 [US1] Set limit to 999999 when None in app/routes/stock_price.py
-- [ ] T008 [US1] Update service method to handle very large limit values in app/services/stock_data_service.py
-- [ ] T009 [US1] Test unlimited query (no limit param) returns all records
-- [ ] T010 [US1] Test explicit limit still works (backward compatibility)
+- [x] T005 [US1] Remove default value from limit parameter in app/routes/stock_price.py
+- [x] T006 [US1] Update limit validation to allow None in app/routes/stock_price.py
+- [x] T007 [US1] Set limit to 999999 when None in app/routes/stock_price.py
+- [x] T008 [US1] Update service method to handle very large limit values in app/services/stock_data_service.py
+- [x] T009 [US1] Test unlimited query (no limit param) returns all records
+- [x] T010 [US1] Test explicit limit still works (backward compatibility)
 
 ---
 
@@ -55,12 +55,12 @@ Tasks for removing default pagination limits, verifying market filtering is data
 
 **Tasks**:
 
-- [ ] T011 [US2] Review existing market_code filtering implementation in app/services/stock_data_service.py
-- [ ] T012 [US2] Verify market_code is added to SQL WHERE clause (lines 254-256)
-- [ ] T013 [US2] Test market_code=SH returns only SH instruments
-- [ ] T014 [US2] Test market_code=SZ returns only SZ instruments
-- [ ] T015 [US2] Test combined filters (market_code + is_etf) work correctly
-- [ ] T016 [US2] Document that market filtering is already database-level
+- [x] T011 [US2] Review existing market_code filtering implementation in app/services/stock_data_service.py
+- [x] T012 [US2] Verify market_code is added to SQL WHERE clause (lines 254-256)
+- [x] T013 [US2] Test market_code=SH returns only SH instruments
+- [x] T014 [US2] Test market_code=SZ returns only SZ instruments
+- [x] T015 [US2] Test combined filters (market_code + is_etf) work correctly
+- [x] T016 [US2] Document that market filtering is already database-level
 
 ---
 
@@ -72,13 +72,13 @@ Tasks for removing default pagination limits, verifying market filtering is data
 
 **Tasks**:
 
-- [ ] T017 [US3] Configure Gunicorn timeout to 600 seconds in config/gunicorn_config.py
-- [ ] T018 [US3] Configure graceful_timeout to 630 seconds in config/gunicorn_config.py
-- [ ] T019 [US3] Update bin/start.sh to use Gunicorn configuration
-- [ ] T020 [US3] Test query with 500 records + 1 script (expect < 1 minute)
-- [ ] T021 [US3] Test query with 1000 records + 3 scripts (expect 2-5 minutes)
-- [ ] T022 [US3] Verify no 504 timeout error for queries < 10 minutes
-- [ ] T023 [US3] Add logging for long-running queries (execution time tracking)
+- [x] T017 [US3] Configure Gunicorn timeout to 600 seconds in config/gunicorn_config.py
+- [x] T018 [US3] Configure graceful_timeout to 630 seconds in config/gunicorn_config.py
+- [x] T019 [US3] Update bin/start.sh to use Gunicorn configuration
+- [x] T020 [US3] Test query with 500 records + 1 script (expect < 1 minute)
+- [x] T021 [US3] Test query with 1000 records + 3 scripts (expect 2-5 minutes)
+- [x] T022 [US3] Verify no 504 timeout error for queries < 10 minutes
+- [x] T023 [US3] Add logging for long-running queries (execution time tracking)
 
 ---
 
@@ -88,13 +88,13 @@ Tasks for removing default pagination limits, verifying market filtering is data
 
 **Tasks**:
 
-- [ ] T024 Test API response format matches contracts/api-contracts.json
-- [ ] T025 Test offset parameter still works with explicit limit
-- [ ] T026 Verify memory usage acceptable for 2000-record queries
-- [ ] T027 Document expected response times in quickstart.md
-- [ ] T028 Add performance monitoring logs for query size and execution time
-- [ ] T029 Verify backward compatibility (explicit limit/offset still work)
-- [ ] T030 Commit implementation to main branch
+- [x] T024 Test API response format matches contracts/api-contracts.json
+- [x] T025 Test offset parameter still works with explicit limit
+- [x] T026 Verify memory usage acceptable for 2000-record queries
+- [x] T027 Document expected response times in quickstart.md
+- [x] T028 Add performance monitoring logs for query size and execution time
+- [x] T029 Verify backward compatibility (explicit limit/offset still work)
+- [x] T030 Commit implementation to main branch
 
 ---
 

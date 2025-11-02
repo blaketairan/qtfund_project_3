@@ -2,6 +2,10 @@ from typing import Optional
 from pydantic_settings import BaseSettings
 from pydantic import Field
 
+# 请求超时配置（秒）
+REQUEST_TIMEOUT = 600  # 10分钟，支持大数据集查询与脚本计算
+GRACEFUL_TIMEOUT = 630  # 优雅关闭超时
+
 
 class DatabaseConfig(BaseSettings):
     """数据库配置类"""

@@ -131,8 +131,12 @@ def list_stocks():
     try:
         market_code = request.args.get('market_code')
         is_active = request.args.get('is_active', 'Y')
-        limit = request.args.get('limit', 100, type=int)
+        limit = request.args.get('limit', type=int)  # No default - None if not provided
         offset = request.args.get('offset', 0, type=int)
+        
+        # 如果未提供limit，设置为无限制
+        if limit is None:
+            limit = 999999  # Effectively unlimited
         
         # 解析 is_etf 参数
         is_etf_param = request.args.get('is_etf')
@@ -142,16 +146,17 @@ def list_stocks():
                 return create_error_response(400, "参数错误", "is_etf must be 'true' or 'false'")
             is_etf = is_etf_param.lower() == 'true'
         
-        # 限制最大查询数量，防止性能问题
-        if limit > 10000:
-            return create_error_response(
-                400,
-                "参数错误",
-                "limit参数不能超过10000，建议使用分页查询"
-            )
-        
-        if limit <= 0:
-            return create_error_response(400, "参数错误", "limit必须大于0")
+        # 限制最大查询数量，防止性能问题（仅当显式提供limit时）
+        if limit is not None and limit != 999999:  # Skip validation for unlimited queries
+            if limit > 10000:
+                return create_error_response(
+                    400,
+                    "参数错误",
+                    "limit参数不能超过10000，建议使用分页查询"
+                )
+            
+            if limit <= 0:
+                return create_error_response(400, "参数错误", "limit必须大于0")
         
         if offset < 0:
             return create_error_response(400, "参数错误", "offset不能为负数")
