@@ -129,7 +129,17 @@ def get_stock_info(symbol: str):
 def list_stocks():
     """列出所有股票（包含最新价格信息和可选的脚本计算结果）"""
     try:
-        market_code = request.args.get('market_code')
+        market_code_param = request.args.get('market_code')
+        # 支持逗号分隔的多个市场代码
+        market_codes = None
+        if market_code_param:
+            market_codes = [code.strip().upper() for code in market_code_param.split(',')]
+            # 验证市场代码
+            valid_codes = {'SH', 'SZ', 'BJ'}
+            invalid_codes = [code for code in market_codes if code not in valid_codes]
+            if invalid_codes:
+                return create_error_response(400, "参数错误", f"无效的市场代码: {', '.join(invalid_codes)}")
+        
         is_active = request.args.get('is_active', 'Y')
         limit = request.args.get('limit', type=int)  # No default - None if not provided
         offset = request.args.get('offset', 0, type=int)
@@ -166,7 +176,7 @@ def list_stocks():
         
         # 使用新方法获取包含价格数据的股票列表
         result = service.list_stocks_with_latest_price(
-            market_code=market_code,
+            market_codes=market_codes,
             is_active=is_active,
             is_etf=is_etf,
             limit=limit,

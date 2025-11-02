@@ -192,6 +192,7 @@ class StockDataService:
     
     def list_stocks_with_latest_price(self,
                                       market_code: Optional[str] = None,
+                                      market_codes: Optional[list] = None,
                                       is_active: str = 'Y',
                                       is_etf: Optional[bool] = None,
                                       limit: int = 100,
@@ -202,7 +203,8 @@ class StockDataService:
         使用 LATERAL JOIN 高效查询每只股票的最新价格、涨跌幅和成交量。
         
         Args:
-            market_code: 市场代码过滤（SH/SZ/BJ）
+            market_code: 单个市场代码过滤（SH/SZ/BJ）- 保留向后兼容
+            market_codes: 多个市场代码列表（['SH', 'SZ']）- 新增支持
             is_active: 是否活跃（Y/N）
             is_etf: ETF筛选（True-仅ETF, False-仅股票, None-全部）
             limit: 返回数量限制
@@ -246,14 +248,19 @@ class StockDataService:
                 
                 params = {
                     'is_active': is_active,
-                    'market_code': market_code,
                     'limit': limit,
                     'offset': offset
                 }
                 
-                # 添加市场过滤
-                if market_code:
+                # 添加市场过滤（支持单个或多个市场）
+                if market_codes:
+                    # 多个市场：使用 IN 子句
+                    placeholders = ', '.join([f"'{code}'" for code in market_codes])
+                    query += f" AND si.market_code IN ({placeholders})"
+                elif market_code:
+                    # 单个市场：向后兼容
                     query += " AND si.market_code = :market_code"
+                    params['market_code'] = market_code
                 
                 # 添加ETF过滤
                 if is_etf is not None:
@@ -293,7 +300,12 @@ class StockDataService:
                 """
                 count_params = {'is_active': is_active}
                 
-                if market_code:
+                if market_codes:
+                    # 多个市场
+                    placeholders = ', '.join([f"'{code}'" for code in market_codes])
+                    count_query += f" AND si.market_code IN ({placeholders})"
+                elif market_code:
+                    # 单个市场
                     count_query += " AND si.market_code = :market_code"
                     count_params['market_code'] = market_code
                 
