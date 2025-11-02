@@ -1,0 +1,140 @@
+{
+  "api_contracts": {
+    "list_stocks_unlimited": {
+      "description": "Returns all stocks/ETFs matching query filters without limit restrictions, supporting long-running queries",
+      "endpoint": "GET /api/stock-price/list",
+      "query_parameters": {
+        "market_code": {
+          "type": "string",
+          "required": false,
+          "description": "Filter by market code at database level (SH/SZ/BJ)",
+          "enum": ["SH", "SZ", "BJ"]
+        },
+        "is_active": {
+          "type": "string",
+          "required": false,
+          "default": "Y",
+          "description": "Filter by active status (Y/N)",
+          "enum": ["Y", "N"]
+        },
+        "is_etf": {
+          "type": "boolean",
+          "required": false,
+          "description": "Filter by instrument type - true for ETFs, false for stocks, omitted for both"
+        },
+        "limit": {
+          "type": "integer",
+          "required": false,
+          "description": "DEPRECATED - Optional limit for backwards compatibility. If not provided, returns all matching records.",
+          "deprecated": true
+        },
+        "offset": {
+          "type": "integer",
+          "required": false,
+          "description": "DEPRECATED - Optional offset for backwards compatibility",
+          "deprecated": true
+        },
+        "script_ids": {
+          "type": "array[integer]",
+          "required": false,
+          "description": "Array of script IDs to calculate for all returned instruments"
+        }
+      },
+      "response_success": {
+        "code": 200,
+        "message": "查询到 1523 只股票",
+        "timestamp": "2025-01-27 10:30:45",
+        "data": [
+          {
+            "symbol": "SH.600519",
+            "stock_name": "贵州茅台",
+            "market_code": "SH",
+            "is_active": "Y",
+            "is_etf": false,
+            "close_price": 1750.50,
+            "price_change_pct": 2.35,
+            "volume": 12500000,
+            "latest_trade_date": "2025-01-27"
+          },
+          "... (1522 more records)"
+        ],
+        "total": 1523,
+        "count": 1523
+      },
+      "response_fields": {
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Instrument symbol with market prefix"
+        },
+        "stock_name": {
+          "type": "string",
+          "required": true,
+          "description": "Instrument name"
+        },
+        "market_code": {
+          "type": "string",
+          "required": true,
+          "description": "Market code (SH/SZ/BJ)"
+        },
+        "is_active": {
+          "type": "string",
+          "required": true,
+          "description": "Active status (Y/N)"
+        },
+        "is_etf": {
+          "type": "boolean",
+          "required": true,
+          "description": "Whether instrument is an ETF"
+        },
+        "close_price": {
+          "type": "number",
+          "nullable": true
+        },
+        "price_change_pct": {
+          "type": "number",
+          "nullable": true
+        },
+        "volume": {
+          "type": "integer",
+          "nullable": true
+        },
+        "latest_trade_date": {
+          "type": "string",
+          "format": "YYYY-MM-DD",
+          "nullable": true
+        },
+        "script_results": {
+          "type": "object",
+          "required": false,
+          "nullable": true,
+          "description": "Only included when script_ids parameter is provided"
+        }
+      },
+      "response_constraints": {
+        "no_default_limit": "When limit parameter is not provided, ALL matching records are returned (no artificial pagination)",
+        "backend_filtering": "market_code filtering is applied in database WHERE clause, not application layer",
+        "timeout": "Server supports requests up to 10 minutes (600 seconds) to handle large dataset queries with script calculations",
+        "performance": "Response time scales with dataset size - expect 1-5 minutes for 1000+ instruments with script calculations"
+      },
+      "error_responses": {
+        "400": {
+          "code": 400,
+          "message": "参数错误",
+          "error": "Invalid parameter value"
+        },
+        "500": {
+          "code": 500,
+          "message": "查询失败",
+          "error": "Database or script execution error"
+        },
+        "504": {
+          "code": 504,
+          "message": "请求超时",
+          "error": "Query exceeded 10 minute timeout"
+        }
+      }
+    }
+  }
+}
+
