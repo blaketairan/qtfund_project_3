@@ -2,7 +2,8 @@
 
 **Feature Branch**: `007-backend-filter-optimization`  
 **Created**: 2025-01-27  
-**Status**: Draft  
+**Status**: ✅ Completed  
+**Implemented**: 2025-10-27  
 **Input**: User description: "市场筛选改为后端执行，取消limit限制，支持返回全部数据，调整超时时间为10分钟"
 
 > **Note**: This specification MUST be placed in the target project's `specs/007-backend-filter-optimization/` directory (e.g., `qtfund_project_3/specs/`).
