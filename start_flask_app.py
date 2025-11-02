@@ -25,11 +25,12 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# 导出Flask应用对象供Gunicorn使用
+from app import app
+
 def main():
     """主启动函数"""
     try:
-        # 导入Flask应用
-        from app import app
         
         logger.info("🚀 启动股票数据查询服务...")
         logger.info("📊 服务功能:")
