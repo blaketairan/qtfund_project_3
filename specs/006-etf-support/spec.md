@@ -2,7 +2,8 @@
 
 **Feature Branch**: `006-etf-support`  
 **Created**: 2025-01-27  
-**Status**: Draft  
+**Status**: ✅ Completed  
+**Implemented**: 2025-10-27  
 **Input**: User description: "需要在查询API中支持ETF筛选功能，并确保脚本计算功能适用于ETF数据"
 
 > **Note**: This specification MUST be placed in the target project's `specs/006-etf-support/` directory (e.g., `qtfund_project_3/specs/`).

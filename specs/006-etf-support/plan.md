@@ -1,6 +1,7 @@
 # Implementation Plan: ETF Support in Data Query API
 
-**Branch**: `006-etf-support` | **Date**: 2025-10-27 | **Spec**: [spec.md](./spec.md)
+**Branch**: `006-etf-support` | **Date**: 2025-10-27 | **Spec**: [spec.md](./spec.md)  
+**Status**: ✅ COMPLETED | **Implemented**: 2025-10-27  
 **Input**: Feature specification from `/specs/006-etf-support/spec.md`
 
 ## Summary
