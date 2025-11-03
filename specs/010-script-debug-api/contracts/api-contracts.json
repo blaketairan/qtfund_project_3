@@ -1,0 +1,106 @@
+{
+  "api_contracts": {
+    "debug_script": {
+      "description": "Debug custom calculation script against a single stock with detailed execution logs",
+      "endpoint": "POST /api/custom-calculations/debug",
+      "request_body": {
+        "script": {
+          "type": "string",
+          "required": false,
+          "description": "Inline script code (mutually exclusive with script_id)",
+          "max_length": 100000,
+          "example": "result = row['close_price'] * 1.1"
+        },
+        "script_id": {
+          "type": "integer",
+          "required": false,
+          "description": "ID of uploaded script (mutually exclusive with script)",
+          "example": 5
+        },
+        "symbol": {
+          "type": "string",
+          "required": true,
+          "description": "Stock symbol to test against",
+          "pattern": "^(SH|SZ|BJ)\\.[0-9]{6}$",
+          "example": "SH.600519"
+        },
+        "mock_data": {
+          "type": "object",
+          "required": false,
+          "description": "Optional mock row data for testing",
+          "example": {
+            "symbol": "SH.600519",
+            "stock_name": "贵州茅台",
+            "close_price": 1700.50,
+            "volume": 12000000
+          }
+        }
+      },
+      "response_success": {
+        "code": 200,
+        "message": "脚本调试执行成功",
+        "data": {
+          "symbol": "SH.600519",
+          "result": 1870.55,
+          "logs": [
+            "[INPUT] Symbol: SH.600519",
+            "[INPUT] Script source: inline code",
+            "[INPUT] Row data: {symbol: 'SH.600519', stock_name: '贵州茅台', close_price: 1700.50, volume: 12000000}",
+            "[VALIDATION] Syntax check passed",
+            "[EXEC] Starting script execution",
+            "[CALC] row['close_price'] = 1700.50",
+            "[CALC] Calculation: 1700.50 * 1.1 = 1870.55",
+            "[RESULT] result = 1870.55, type: float",
+            "[TIMING] Total execution: 23ms"
+          ],
+          "duration_ms": 23,
+          "row_data": {
+            "symbol": "SH.600519",
+            "stock_name": "贵州茅台",
+            "close_price": 1700.50,
+            "volume": 12000000
+          }
+        }
+      },
+      "response_error_syntax": {
+        "code": 400,
+        "message": "语法错误",
+        "error": "invalid syntax at line 3",
+        "details": {
+          "line_number": 3,
+          "error_type": "syntax",
+          "logs": [
+            "[INPUT] Symbol: SH.600519",
+            "[VALIDATION] Syntax check failed",
+            "[ERROR] Syntax error at line 3: invalid syntax"
+          ]
+        }
+      },
+      "response_error_runtime": {
+        "code": 500,
+        "message": "执行错误",
+        "error": "division by zero",
+        "details": {
+          "traceback": "Traceback (most recent call last):\\n  File \"<inline-script>\", line 5\\n    result = price / 0\\nZeroDivisionError: division by zero",
+          "error_type": "runtime",
+          "logs": [
+            "[INPUT] Symbol: SH.600519",
+            "[VALIDATION] Syntax check passed",
+            "[EXEC] Starting script execution",
+            "[CALC] price = 1700.50",
+            "[ERROR] Runtime error: division by zero"
+          ],
+          "duration_ms": 15
+        }
+      },
+      "validation_rules": {
+        "script_or_id": "Exactly one of 'script' or 'script_id' must be provided",
+        "symbol_required": "Symbol parameter is required",
+        "symbol_format": "Symbol must match pattern: (SH|SZ|BJ).XXXXXX",
+        "script_exists": "If script_id provided, script must exist in database",
+        "mock_data_optional": "mock_data is optional, if provided must include symbol and stock_name"
+      }
+    }
+  }
+}
+

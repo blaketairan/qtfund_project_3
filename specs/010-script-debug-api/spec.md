@@ -9,18 +9,19 @@
 
 ### User Story 1 - Debug Script with Single Stock (Priority: P1)
 
-Users can test their custom calculation scripts against a specific stock symbol before deploying to production, receiving detailed execution logs and intermediate calculation results.
+Users can test their custom calculation scripts against a specific stock symbol before deploying to production, receiving detailed execution logs and intermediate calculation results. Users can provide either script code directly or reference an existing script ID.
 
 **Why this priority**: Script development requires iterative testing - users need fast feedback on script correctness without querying entire datasets.
 
-**Independent Test**: Users can call debug API with script code and stock symbol, receiving execution result and detailed logs.
+**Independent Test**: Users can call debug API with script code/ID and stock symbol, receiving execution result and detailed logs.
 
 **Acceptance Scenarios**:
 
 1. **Given** user writes a new calculation script, **When** they call debug API with script code and stock symbol "SH.600519", **Then** API returns calculation result and detailed execution logs
-2. **Given** script contains syntax errors, **When** debug API executes, **Then** response includes specific syntax error messages with line numbers
-3. **Given** script runtime fails (e.g., division by zero), **When** debug API executes, **Then** response includes runtime error with traceback and variable values
-4. **Given** script accesses historical data via get_history(), **When** debug API executes, **Then** logs show how many history records were retrieved and their date range
+2. **Given** user has uploaded script with ID=5, **When** they call debug API with script_id=5 and stock symbol "SH.600519", **Then** API loads the script and executes it with detailed logs
+3. **Given** script contains syntax errors, **When** debug API executes, **Then** response includes specific syntax error messages with line numbers
+4. **Given** script runtime fails (e.g., division by zero), **When** debug API executes, **Then** response includes runtime error with traceback and variable values
+5. **Given** script accesses historical data via get_history(), **When** debug API executes, **Then** logs show how many history records were retrieved and their date range
 
 ---
 
@@ -62,7 +63,8 @@ Users can choose to test scripts with real stock data from database or provide m
 
 ### Functional Requirements
 
-- **FR-001**: API MUST provide debug endpoint accepting script code and stock symbol as input
+- **FR-001**: API MUST provide debug endpoint accepting either script code OR script ID as input
+- **FR-001a**: API MUST accept stock symbol parameter to identify which stock to test
 - **FR-002**: API MUST execute script against specified stock symbol and return calculation result
 - **FR-003**: API MUST capture and return detailed execution logs including variable values and function calls
 - **FR-004**: API MUST return syntax errors with line numbers when script compilation fails
@@ -75,7 +77,8 @@ Users can choose to test scripts with real stock data from database or provide m
 
 ### Key Entities
 
-- **Debug Request**: Script code + stock symbol + optional mock data
+- **Debug Request**: (Script code OR script ID) + stock symbol + optional mock data
+- **Script Reference**: Existing uploaded script identified by ID
 - **Debug Response**: Execution result + detailed logs + errors + duration
 - **Execution Logs**: Step-by-step record of script execution with variable values
 - **Mock Data**: Optional test data replacing real database query
