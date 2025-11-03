@@ -9,14 +9,16 @@
 2. 在 GET /api/stock-price/list?script_ids=[script_id] 中调用
 
 返回值：当前动量分数（考虑加速度的动量评分）
+
+注意：math 模块已由平台提供，无需 import
 """
 
-import math
+# math 模块已在沙箱环境中提供，无需导入
 
 # ============ 配置参数 ============
-MOMENTUM_DAY = 60        # 每个滑动窗口的天数
-TOTAL_DAYS = 120         # 获取历史数据总天数（MOMENTUM_DAY * 2）
-MIN_DATA_POINTS = 30     # 最少数据点要求
+MOMENTUM_DAY = 34        # 每个滑动窗口的天数
+TOTAL_DAYS = 68         # 获取历史数据总天数（MOMENTUM_DAY * 2）
+MIN_DATA_POINTS = 34     # 最少数据点要求
 
 # ============ 辅助函数 ============
 
